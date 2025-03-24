@@ -1,18 +1,18 @@
-# Fury on minikube
+# SIGHUP Distribution on minikube
 
-This step-by-step tutorial helps you deploy a subset of the **Kubernetes Fury Distribution** on a local minikube cluster.
+This step-by-step tutorial helps you deploy a subset of the **SIGHUP Distribution** on a local minikube cluster.
 
 This tutorial covers the following steps:
 
 1. Deploy a local minikube cluster.
 2. Download the latest `furyctl` CLI.
-3. Install Fury distribution using `furyctl` CLI.
+3. Install SKD distribution using `furyctl` CLI.
 4. Explore some features of the distribution.
 5. Teardown the environment.
 
-> ☁️ If you prefer trying Fury in a cloud environment, check out the [Fury on EKS][fury-on-eks] tutorial.
+> ☁️ If you prefer trying SKD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
 
-The goal of this tutorial is to introduce you to the main concepts of KFD and how to work with its tooling.
+The goal of this tutorial is to introduce you to the main concepts of SKD and how to work with its tooling.
 
 ## Prerequisites
 
@@ -27,11 +27,11 @@ To follow this tutorial, you need:
 
 1. Open a terminal
 
-2. Clone the [fury getting started repository](https://github.com/sighupio/fury-getting-started) containing all the example code used in this tutorial:
+2. Clone the [getting started repository](https://github.com/sighupio/getting-started) containing all the example code used in this tutorial:
 
 ```bash
-git clone https://github.com/sighupio/fury-getting-started/
-cd fury-getting-started/fury-on-minikube
+git clone https://github.com/sighupio/getting-started/
+cd getting-started/distro-on-minikube
 ```
 
 ## Step 1 - Start the minikube cluster
@@ -145,8 +145,8 @@ In this example, we are installing the distribution with the following options:
 > ℹ️ Usually, when using the dual ingress controller, the `internal.<ingress domain>` base domain is specified. For this occurence, since there is
 > just a single NGINX Ingress (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
 > Feel free to edit the furyctl.yaml file according to your needs. For more information see
-> [Ingress NGINX Dual](https://docs.kubernetesfury.com/docs/components/modules/ingress/dual-nginx) and
-> [Ingress NGINX Single](https://docs.kubernetesfury.com/docs/components/modules/ingress/nginx) documentation pages.
+> [Ingress NGINX Dual](https://docs.sighup.io/docs/components/modules/ingress/dual-nginx) and
+> [Ingress NGINX Single](https://docs.sighup.io/docs/components/modules/ingress/nginx) documentation pages.
 
 Execute the installation with furyctl:
 
@@ -200,8 +200,6 @@ In Step 3, alongside the distribution, you have deployed Kubernetes ingresses to
 - `prometheus.demo.example.internal`
 
 To access the ingresses more easily via the browser, configure your local DNS to resolve the ingresses to the external minikube IP:
-
-> ℹ️ the following commands should be executed in another terminal of your host. Not inside the fury-getting-started container.
 
 1. Get the address of the cluster IP:
 
@@ -295,18 +293,18 @@ In case you ran into any problems feel free to [open an issue in GitHub](https:/
 
 More tutorials:
 
-- [Fury on EKS][fury-on-eks]
-- [Fury on VMs][fury-on-vms]
+- [SIGHUP Distribution on EKS][distro-on-eks]
+- [SIGHUP Distribution on VMs][distro-on-vms]
 
 More about Fury:
 
-- [Fury Documentation][fury-docs]
+- [Documentation][docs]
 
 <!-- Links -->
-[fury-on-eks]: https://github.com/sighupio/fury-getting-started/tree/main/fury-on-eks
-[fury-on-vms]: https://github.com/sighupio/fury-getting-started/tree/main/fury-on-vms
+[distro-on-eks]: https://github.com/sighupio/getting-started/tree/main/distro-on-eks
+[distro-on-vms]: https://github.com/sighupio/getting-started/tree/main/distro-on-vms
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
-[fury-docs]: https://docs.kubernetesfury.com
+[docs]: https://docs.sighup.io
 
 <!-- Images -->
 [grafana-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/grafana.png?raw=true
