@@ -1,5 +1,0 @@
-kind: storageclass
-metadata:
-  name: local-path
-  annotations:
-    storageclass.kubernetes.io/is-default-class: true
