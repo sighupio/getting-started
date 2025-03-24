@@ -1,12 +1,12 @@
-# Fury on EKS
+# SIGHUP Distribution on EKS
 
-This step-by-step tutorial guides you to deploy the **Kubernetes Fury Distribution** (KFD) on an EKS cluster on AWS using the furyctl `>=0.31.0`
+This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SKD) on an EKS cluster on AWS using the furyctl `>=0.31.0`
 
 This tutorial covers the following steps:
 
 1. Configure the EKS cluster with the configuration file `furyctl.yaml`
 2. Deploy an EKS Kubernetes cluster on AWS with `furyctl`
-3. Explore the Kubernetes Fury Distribution
+3. Explore the SIGHUP Distribution
 4. Advanced Distribution usage
 5. Teardown of the environment
 
@@ -27,11 +27,11 @@ To follow this tutorial, you need:
 
 1. Open a terminal
 
-2. Clone the [fury getting started repository][fury-getting-started-repository] containing the example code used in this tutorial:
+2. Clone the [getting started repository][getting-started-repository] containing the example code used in this tutorial:
 
     ```bash
-    mkdir -p /tmp/fury-getting-started && git -C /tmp/fury-getting-started clone https://github.com/sighupio/fury-getting-started/ .
-    cd /tmp/fury-getting-started/fury-on-eks
+    mkdir -p /tmp/getting-started && git -C /tmp/getting-started clone https://github.com/sighupio/getting-started/ .
+    cd /tmp/getting-started/distro-on-eks
     ```
 
 3. Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
@@ -59,7 +59,7 @@ You are all set ✌️.
 `furyctl` is a command-line tool developed by SIGHUP to support:
 
 - the automatic provisioning of Kubernetes clusters
-- the installation of the Fury distribution
+- the installation of the SIGHUP Distribution
 
 The configuration of the Fury cluster is governed by the `furyctl.yaml` file, which for the purposes of this tutorial
 is located at `/tmp/fury-getting-started/fury-on-eks/furyctl.yaml`.
@@ -269,7 +269,7 @@ In this example, we are installing the distribution with the following options:
 - Basic Auth on the ingresses
 
 Replace the field `<S3_VELERO_BUCKET_NAME>` with the name of the S3 bucket that will be used to store the Velero backups. Notice that **`furyctl` will create this bucket for you**.
-You can configure the existing modules or add new ones (take a look to the [docs][fury-distribution-eks-reference]) should you prefer.
+You can configure the existing modules or add new ones (take a look to the [docs][distribution-eks-reference]) should you prefer.
 
 You should also change the `example.dev` domain with a real one that you own, to be able to leverage the auto-ssl capabilities using cert-manager.
 
@@ -316,7 +316,7 @@ In this section, you will utilize furyctl to automatically provision an EKS Clus
     INFO Saving distribution configuration file in the cluster...
     INFO Kubernetes Fury cluster created successfully
     INFO Please remember to kill the VPN connection when you finish doing operations on the cluster
-    INFO To connect to the cluster, set the path to your kubeconfig with 'export KUBECONFIG=/private/tmp/fury-getting-started/fury-on-eks/kubeconfig' or use the '--kubeconfig /private/tmp/fury-getting-started/fury-on-eks/kubeconfig' flag in following executions
+    INFO To connect to the cluster, set the path to your kubeconfig with 'export KUBECONFIG=/private/tmp/getting-started/distro-on-eks/kubeconfig' or use the '--kubeconfig /private/tmp/getting-started/distro-on-eks/kubeconfig' flag in following executions
     ```
 
 🚀 Success! The distribution is fully deployed. Proceed to the next section to explore the various features it has to offer.
@@ -327,7 +327,7 @@ To interact with the cluster a `kubeconfig` has been created on the folder, make
 export KUBECONFIG=$PWD/kubeconfig
 ```
 
-## Step 3 - Explore the Fury Kubernetes Distribution
+## Step 3 - Explore the SIGHUP Distribution
 
 ### Setup local DNS
 
@@ -526,32 +526,32 @@ We hope you enjoyed this tour of Fury!
 
 ### Issues/Feedback
 
-In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/fury-getting-started/issues/new).
+In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/getting-started/issues/new).
 
 ### Where to go next?
 
 More tutorials:
 
-- [Fury on Minikube][fury-on-minikube]
-- [Fury on VMs][fury-on-vms]
+- [SIGHUP Distribution on Minikube][distro-on-minikube]
+- [SIGHUP Distribution on VMs][distro-on-vms]
 
 More about Fury:
 
-- [Fury Documentation][fury-docs]
+- [Documentation][docs]
 
 <!-- Links -->
 [terraform-aws-eks-iam-permissions]: https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v17.24.0/docs/iam-permissions.md
-[fury-getting-started-repository]: https://github.com/sighupio/fury-getting-started/
+[getting-started-repository]: https://github.com/sighupio/getting-started/
 
-[fury-on-minikube]: https://github.com/sighupio/fury-getting-started/tree/main/fury-on-minikube
-[fury-on-vms]: https://github.com/sighupio/fury-getting-started/tree/main/fury-on-vms
+[distro-on-minikube]: https://github.com/sighupio/getting-started/tree/main/distro-on-minikube
+[distro-on-vms]: https://github.com/sighupio/getting-started/tree/main/distro-on-vms
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
-[fury-docs]: https://docs.kubernetesfury.com
-[opa-module-docs]: https://docs.kubernetesfury.com/docs/modules/opa/overview
+[docs]: https://docs.sighup.io
+[opa-module-docs]: https://docs.sighup.io/docs/modules/opa/overview
 
 [aws-cli-installation]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-version.html
 
-[fury-distribution-eks-reference]: https://github.com/sighupio/fury-distribution/blob/main/templates/config/ekscluster-kfd-v1alpha2.yaml.tpl
+[distribution-eks-reference]: https://github.com/sighupio/distribution/blob/main/templates/config/ekscluster-kfd-v1alpha2.yaml.tpl
 
 <!-- Images -->
 <!-- `media` here is a branch. We used to store all images in that branch and reference them from other branches -->
