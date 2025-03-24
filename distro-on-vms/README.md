@@ -1,8 +1,8 @@
-# Fury on VMs
+# SIGHUP Distribution on VMs
 
-This step-by-step tutorial helps you deploy a full Kubernetes Fury Cluster on a set of already existing VMs.
+This step-by-step tutorial helps you deploy a full SIGHUP Distribution (SKD) cluster on a set of already existing VMs.
 
-> ☁️ If you prefer trying Fury in a cloud environment, check out the [Fury on EKS][fury-on-eks] tutorial.
+> ☁️ If you prefer trying SKD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
 
 The goal of this tutorial is to introduce you to the main concepts of KFD and how to work with its tooling.
 
@@ -13,7 +13,7 @@ This tutorial assumes some basic familiarity with Kubernetes.
 To follow this tutorial, you need:
 
 - **kubectl** - 1.31.x to interact with the cluster.
-- **Ansible** - used by furyctl to execute the roles from KFD installers
+- **Ansible** - used by furyctl to execute the roles from SKD installers
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
 - Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.worker.tld`, etc.
 - Static IP address for each VM.
@@ -33,11 +33,11 @@ Please use a different OS for the Load Balancers VMs (or disable them and create
 
 1. Open a terminal
 
-2. Clone the [fury getting started repository](https://github.com/sighupio/fury-getting-started) containing all the example code used in this tutorial:
+2. Clone the [getting started repository](https://github.com/sighupio/getting-started) containing all the example code used in this tutorial:
 
     ```bash
-    git clone https://github.com/sighupio/fury-getting-started/
-    cd fury-getting-started/fury-on-vms
+    git clone https://github.com/sighupio/getting-started/
+    cd getting-started/distro-on-vms
     ```
 
 ## Step 1 - Install furyctl
@@ -86,7 +86,7 @@ pki
 
 ## Step 3 - Decide the strategy for the SSL certificates
 
-We use the HTTPS protocol to expose the KFD ingresses securely. HTTPS relies on certificates that need to be present, there are two approaches to achieve this:
+We use the HTTPS protocol to expose the SKD ingresses securely. HTTPS relies on certificates that need to be present, there are two approaches to achieve this:
 
 1) Provide a self-signed certificate
 2) Use cert-manager to generate the certificates
@@ -245,7 +245,7 @@ spec:
         type: calico
 ```
 
-In this piece of configuration, we are choosing to install calico as CNI in our cluster from the `fury-kubernetes-networking` core module.
+In this piece of configuration, we are choosing to install calico as CNI in our cluster from the `module-networking` core module.
 
 #### Ingress core module
 
@@ -273,7 +273,7 @@ spec:
                       key: secret-access-key
 ```
 
-In this section, on the configuration of the `fury-kubernetes-ingress` core module, we are selecting to install a single battery of nginx ingress controller and configuring cert-manager as the provider to emit SSL certificates for our ingresses.
+In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single battery of nginx ingress controller and configuring cert-manager as the provider to emit SSL certificates for our ingresses.
 `baseDomain` is the suffix hostname used on all the ingresses that will be created for the KFD modules, for example, Grafana will become `grafana.<baseDomain>`.
 
 To correctly configure the cert-manager clusterIssuer we need to put a valid configuration for the `dns01` challenge solver. The secret `letsencrypt-production-route53-key` will be created using furyctl's plugins feature in the next steps.
@@ -315,7 +315,7 @@ spec:
           storageSize: "20Gi"
 ```
 
-This section configures the `fury-kubernetes-logging` module. In this example we are installing Loki as log storage, and configuring the Logging operator with all the Flows and Outputs to send logs to the Loki stack.
+This section configures the `module-logging` module. In this example we are installing Loki as log storage, and configuring the Logging operator with all the Flows and Outputs to send logs to the Loki stack.
 
 The minio configuration is the S3 bucket used by Loki to store logs, the storageSize selected defines the size for each minio disk, in total 6 disks split in 2 per 3 minio replicas.
 
@@ -329,7 +329,7 @@ spec:
         type: prometheus
 ```
 
-This section configures the `fury-kubernetes-monitoring` module. The complete stack with Prometheus.
+This section configures the `module-monitoring` module. The complete stack with Prometheus.
 
 #### Policy (OPA) core module and Tracing core module
 
@@ -356,7 +356,7 @@ spec:
         velero: {}
 ```
 
-We are also configuring Velero for the cluster backups from the `fury-kubernetes-dr` module. Velero will be deployed with a minio instance used to store all the backups.
+We are also configuring Velero for the cluster backups from the `module-dr` module. Velero will be deployed with a minio instance used to store all the backups.
 
 #### Auth core module
 
@@ -516,7 +516,7 @@ This is what you should see:
 
 #### Discover dashboards
 
-Fury provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
+SKD provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
 
 1. Click on the search icon on the left sidebar.
 2. Write `pods` and click enter.
@@ -540,20 +540,20 @@ In case you ran into any problems feel free to [open an issue in GitHub](https:/
 
 More tutorials:
 
-- [Fury on EKS][fury-on-eks]
-- [Fury on Minikube][fury-on-minikube]
+- [SIGHUP Distribution on EKS][distro-on-eks]
+- [SIGHUP Distribution on Minikube][distro-on-minikube]
 
-More about Fury:
+More about SKD:
 
-- [Fury Documentation][fury-docs]
+- [SKD Documentation][docs]
 
 <!-- Links -->
-[fury-on-minikube]: https://github.com/sighupio/fury-getting-started/tree/main/fury-on-minikube
-[fury-on-eks]: https://github.com/sighupio/fury-getting-started/tree/main/fury-on-eks
-[fury-docs]: https://docs.kubernetesfury.com
+[distro-on-minikube]: https://github.com/sighupio/getting-started/tree/main/distro-on-minikube
+[distro-on-eks]: https://github.com/sighupio/getting-started/tree/main/distro-on-eks
+[docs]: https://docs.sighup.io
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
 
 <!-- Images -->
-[grafana-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/grafana.png?raw=true
-[grafana-screenshot-logs]: https://github.com/sighupio/fury-getting-started/blob/media/grafana-logs.png?raw=true
-[forecastle-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/forecastle_minikube.png?raw=true
+[grafana-screenshot]: https://github.com/sighupio/getting-started/blob/media/grafana.png?raw=true
+[grafana-screenshot-logs]: https://github.com/sighupio/getting-started/blob/media/grafana-logs.png?raw=true
+[forecastle-screenshot]: https://github.com/sighupio/getting-started/blob/media/forecastle_minikube.png?raw=true
