@@ -1,8 +1,8 @@
 # SIGHUP Distribution on VMs
 
-This step-by-step tutorial helps you deploy a full SIGHUP Distribution (SKD) cluster on a set of already existing VMs.
+This step-by-step tutorial helps you deploy a full SIGHUP Distribution (SD) cluster on a set of already existing VMs.
 
-> ☁️ If you prefer trying SKD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
+> ☁️ If you prefer trying SD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
 
 The goal of this tutorial is to introduce you to the main concepts of KFD and how to work with its tooling.
 
@@ -13,7 +13,7 @@ This tutorial assumes some basic familiarity with Kubernetes.
 To follow this tutorial, you need:
 
 - **kubectl** - 1.31.x to interact with the cluster.
-- **Ansible** - used by furyctl to execute the roles from SKD installers
+- **Ansible** - used by furyctl to execute the roles from SD installers
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
 - Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.worker.tld`, etc.
 - Static IP address for each VM.
@@ -86,7 +86,7 @@ pki
 
 ## Step 3 - Decide the strategy for the SSL certificates
 
-We use the HTTPS protocol to expose the SKD ingresses securely. HTTPS relies on certificates that need to be present, there are two approaches to achieve this:
+We use the HTTPS protocol to expose the SD ingresses securely. HTTPS relies on certificates that need to be present, there are two approaches to achieve this:
 
 1) Provide a self-signed certificate
 2) Use cert-manager to generate the certificates
@@ -516,7 +516,7 @@ This is what you should see:
 
 #### Discover dashboards
 
-SKD provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
+SD provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
 
 1. Click on the search icon on the left sidebar.
 2. Write `pods` and click enter.
@@ -543,9 +543,9 @@ More tutorials:
 - [SIGHUP Distribution on EKS][distro-on-eks]
 - [SIGHUP Distribution on Minikube][distro-on-minikube]
 
-More about SKD:
+More about SD:
 
-- [SKD Documentation][docs]
+- [SD Documentation][docs]
 
 <!-- Links -->
 [distro-on-minikube]: https://github.com/sighupio/getting-started/tree/main/distro-on-minikube

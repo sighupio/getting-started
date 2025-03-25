@@ -6,13 +6,13 @@ This tutorial covers the following steps:
 
 1. Deploy a local minikube cluster.
 2. Download the latest `furyctl` CLI.
-3. Install SKD distribution using `furyctl` CLI.
+3. Install SD distribution using `furyctl` CLI.
 4. Explore some features of the distribution.
 5. Teardown the environment.
 
-> ☁️ If you prefer trying SKD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
+> ☁️ If you prefer trying SD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
 
-The goal of this tutorial is to introduce you to the main concepts of SKD and how to work with its tooling.
+The goal of this tutorial is to introduce you to the main concepts of SD and how to work with its tooling.
 
 ## Prerequisites
 

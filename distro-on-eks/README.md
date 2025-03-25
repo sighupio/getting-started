@@ -1,6 +1,6 @@
 # SIGHUP Distribution on EKS
 
-This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SKD) on an EKS cluster on AWS using the furyctl `>=0.31.0`
+This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.31.0`
 
 This tutorial covers the following steps:
 
