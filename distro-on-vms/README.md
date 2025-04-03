@@ -23,11 +23,8 @@ To follow this tutorial, you need:
 - Three VMs for the worker nodes (at least 4vCPU and 8GB RAM each)
 - `root` or passwordless sudo user SSH access to the VMs
 
-:::warning
-Support for the ARM platform is still in *beta* status, the Load Balancers managed by `furyctl` are not currently supported for **RHEL and RHEL derivatives** running on ARM.
-
-Please use a different OS for the Load Balancers VMs (or disable them and create your own load balancer) to be able to follow the tutorial.
-:::
+> [!WARNING]
+> Support for the ARM platform is still in beta status, the Load Balancers installed with the `haproxy` role are not currently supported for RHEL and RHEL derivatives running on ARM. Please use a different OS for the Load Balancers VMs (or disable them and create your own load balancer).
 
 ## Step 0 - Setup and initialize the environment
 
@@ -44,7 +41,7 @@ Please use a different OS for the Load Balancers VMs (or disable them and create
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution. This guide assumes that furyctl version is at least 0.32.0. You can check with the following command:
+We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution. This guide assumes that furyctl version is at least 0.31.0. You can check with the following command:
 
 ```bash
 furyctl version
