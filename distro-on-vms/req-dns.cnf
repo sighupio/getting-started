@@ -7,5 +7,5 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = fury.example.tld
-DNS.2 = *.fury.example.tld
+DNS.1 = sighup.example.tld
+DNS.2 = *.sighup.example.tld

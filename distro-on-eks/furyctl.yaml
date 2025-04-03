@@ -19,7 +19,7 @@ spec:
           region: <S3_TFSTATE_BUCKET_REGION>
   region: <CLUSTER_REGION>
   tags:
-    env: "fury-getting-started"
+    env: "sighup-getting-started"
   infrastructure:
     vpc:
       network:
@@ -105,7 +105,7 @@ spec:
             provider: certManager
         certManager:
           clusterIssuer:
-            name: letsencrypt-fury
+            name: letsencrypt-sighup
             email: admin@example.dev
             type: dns01
         dns:

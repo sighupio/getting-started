@@ -4,7 +4,7 @@ This step-by-step tutorial helps you deploy a full SIGHUP Distribution (SD) clus
 
 > ☁️ If you prefer trying SD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
 
-The goal of this tutorial is to introduce you to the main concepts of KFD and how to work with its tooling.
+The goal of this tutorial is to introduce you to the main concepts of SD and how to work with its tooling.
 
 ## Prerequisites
 
@@ -113,8 +113,8 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = fury.example.tld
-DNS.2 = *.fury.example.tld
+DNS.1 = sighup.example.tld
+DNS.2 = *.sighup.example.tld
 ```
 
 Change it accordingly to your environment
@@ -123,7 +123,7 @@ Change it accordingly to your environment
 
 With cert-manager you can get valid certificates automatically created for you. You can use the `http01` challenge to get certificates from Let's Encrypt if your load-balancer is reachable from the Internet, otherwise, we suggest using the `dns01` solvers that use an authoritative DNS zone to emit certificates.
 
-KFD includes cert-manager in its core packages and it is fully integrated with the distribution. We will use cert-manager with the `dns01` challenge approach in this tutorial.
+SD includes cert-manager in its core packages and it is fully integrated with the distribution. We will use cert-manager with the `dns01` challenge approach in this tutorial.
 
 ## Step 4 - Write the `furyctl.yaml` configuration file
 
@@ -251,14 +251,14 @@ spec:
   distribution:
     modules:
       ingress:
-        baseDomain: fury.example.tld
+        baseDomain: sighup.example.tld
         nginx:
           type: single
           tls:
             provider: certManager
         certManager:
           clusterIssuer:
-            name: letsencrypt-fury
+            name: letsencrypt-sighup
             email: example@sighup.io
             solvers:
               - dns01:
@@ -271,7 +271,7 @@ spec:
 ```
 
 In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single battery of nginx ingress controller and configuring cert-manager as the provider to emit SSL certificates for our ingresses.
-`baseDomain` is the suffix hostname used on all the ingresses that will be created for the KFD modules, for example, Grafana will become `grafana.<baseDomain>`.
+`baseDomain` is the suffix hostname used on all the ingresses that will be created for the SD modules, for example, Grafana will become `grafana.<baseDomain>`.
 
 To correctly configure the cert-manager clusterIssuer we need to put a valid configuration for the `dns01` challenge solver. The secret `letsencrypt-production-route53-key` will be created using furyctl's plugins feature in the next steps.
 
@@ -282,7 +282,7 @@ To correctly configure the cert-manager clusterIssuer we need to put a valid con
 >  distribution:
 >    modules:
 >      ingress:
->        baseDomain: fury.example.tld
+>        baseDomain: sighup.example.tld
 >        nginx:
 >          type: single
 >          tls:
@@ -293,7 +293,7 @@ To correctly configure the cert-manager clusterIssuer we need to put a valid con
 >              ca: "{file://./ca.crt}"
 >        certManager:
 >          clusterIssuer:
->            name: letsencrypt-fury
+>            name: letsencrypt-sighup
 >            email: example@sighup.io
 >            type: http01
 > ```
@@ -370,7 +370,7 @@ This section configures the authentication for the ingresses and also the authen
 
 #### Custom registry for distribution phase
 
-We can override the URL of the registry where to pull images from for the KFD core modules. The host is mandatory, while the port is optional. For mirrors of the official registry, append `/fury` at the end (the default value is `registry.sighup.io/fury`).
+We can override the URL of the registry where to pull images from for the SD core modules. The host is mandatory, while the port is optional. For mirrors of the official registry, append `/fury` at the end (the default value is `registry.sighup.io/fury`).
 
 ```yaml
 spec:
@@ -429,16 +429,16 @@ INFO Running preflight checks
 INFO Preflight checks completed successfully
 INFO Running preupgrade phase...
 INFO Preupgrade phase completed successfully
-INFO Creating Kubernetes Fury cluster...
+INFO Creating SIGHUP Distribution cluster...
 INFO Checking that the hosts are reachable...
 INFO Running ansible playbook...
 INFO Kubernetes cluster created successfully
-INFO Installing Kubernetes Fury Distribution...
+INFO Installing SIGHUP Distribution...
 INFO Checking that the cluster is reachable...
 INFO Checking storage classes...
 WARN No storage classes found in the cluster. logging module (if enabled), tracing module (if enabled), dr module (if enabled) and prometheus-operated package installation will be skipped. You need to install a StorageClass and re-run furyctl to install the missing components.
 INFO Applying manifests...
-INFO Kubernetes Fury Distribution installed successfully
+INFO Kubernetes SIGHUP Distribution installed successfully
 INFO Applying plugins...
 INFO Plugins installed successfully
 INFO Saving furyctl configuration file in the cluster...
@@ -462,15 +462,15 @@ INFO Checking that the cluster is reachable...
 INFO Preflight checks completed successfully
 INFO Running preupgrade phase...
 INFO Preupgrade phase completed successfully
-INFO Creating Kubernetes Fury cluster...
+INFO Creating SIGHUP Distribution cluster...
 INFO Checking that the hosts are reachable...
 INFO Running ansible playbook...
 INFO Kubernetes cluster created successfully
-INFO Installing Kubernetes Fury Distribution...
+INFO Installing SIGHUP Distribution...
 INFO Checking that the cluster is reachable...
 INFO Checking storage classes...
 INFO Applying manifests...
-INFO Kubernetes Fury Distribution installed successfully
+INFO SIGHUP Distribution installed successfully
 INFO Applying plugins...
 INFO Plugins installed successfully
 INFO Saving furyctl configuration file in the cluster...
@@ -489,7 +489,7 @@ export KUBECONFIG=$PWD/kubeconfig
 
 [Forecastle](https://github.com/stakater/Forecastle) is an open-source control panel where you can access all exposed applications running on Kubernetes.
 
-Navigate to https://directory.fury.example.tld to see all the other ingresses deployed, grouped by namespace.
+Navigate to https://directory.sighup.example.tld to see all the other ingresses deployed, grouped by namespace.
 
 ![Forecastle][forecastle-screenshot]
 
@@ -497,7 +497,7 @@ Navigate to https://directory.fury.example.tld to see all the other ingresses de
 
 [Grafana](https://github.com/grafana/grafana) is an open-source platform for monitoring and observability. Grafana allows you to query, visualize, alert, and understand your metrics.
 
-Navigate to https://grafana.fury.example.tld or click the Grafana icon from Forecastle.
+Navigate to https://grafana.sighup.example.tld or click the Grafana icon from Forecastle.
 
 #### Discover the logs
 
@@ -527,11 +527,11 @@ This is what you should see:
 
 Congratulations, you made it! 🥳🥳
 
-We hope you enjoyed this tour of Fury!
+We hope you enjoyed this tour of SIGHUP Distribution!
 
 ### Issues/Feedback
 
-In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/fury-getting-started/issues/new).
+In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/getting-started/issues/new).
 
 ### Where to go next?
 

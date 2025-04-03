@@ -61,8 +61,8 @@ You are all set ✌️.
 - the automatic provisioning of Kubernetes clusters
 - the installation of the SIGHUP Distribution
 
-The configuration of the Fury cluster is governed by the `furyctl.yaml` file, which for the purposes of this tutorial
-is located at `/tmp/fury-getting-started/fury-on-eks/furyctl.yaml`.
+The configuration of the SIGHUP Distribution cluster is governed by the `furyctl.yaml` file, which for the purposes of this tutorial
+is located at `/tmp/getting-started/distro-on-eks/furyctl.yaml`.
 
 > ℹ️ You can also create a sample configuration file by running the following command:
 >
@@ -102,10 +102,10 @@ spec:
           region: <S3_TFSTATE_BUCKET_REGION>
   region: <CLUSTER_REGION>
   tags:
-    env: "fury-getting-started"
+    env: "sighup-getting-started"
 ```
 
-Open the `/tmp/fury-getting-started/fury-next-on-eks/furyctl.yaml` file with a text editor of your choice and replace the field `<CLUSTER_NAME>` with a name of your choice for the cluster, and the field `<CLUSTER_REGION>` with the AWS region where you want to deploy the cluster.
+Open the `/tmp/getting-started/distro-on-eks/furyctl.yaml` file with a text editor of your choice and replace the field `<CLUSTER_NAME>` with a name of your choice for the cluster, and the field `<CLUSTER_REGION>` with the AWS region where you want to deploy the cluster.
 If you already have a S3 bucket to store the Terraform state, replace the field `<S3_TFSTATE_BUCKET>`, `<S3_TFSTATE_BUCKET_KEY_PREFIX>`, `<S3_TFSTATE_BUCKET_REGION>` with the data from the bucket, otherwise furyctl will create it for you.
 
 ### Infrastructure section
@@ -225,7 +225,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
             provider: certManager
         certManager:
           clusterIssuer:
-            name: letsencrypt-fury
+            name: letsencrypt-sighup
             email: admin@example.dev
             type: dns01
         dns:
@@ -274,7 +274,7 @@ You can configure the existing modules or add new ones (take a look to the [docs
 
 You should also change the `example.dev` domain with a real one that you own, to be able to leverage the auto-ssl capabilities using cert-manager.
 
-From these parameters, `furyctl` will automatically configure and deploy the battle-tested Kubernetes Fury Distribution.
+From these parameters, `furyctl` will automatically configure and deploy the battle-tested SIGHUP Distribution.
 
 ## Step 2 - Provisioning an EKS Cluster Automatically with furyctl
 
@@ -305,17 +305,17 @@ In this section, you will utilize furyctl to automatically provision an EKS Clus
     INFO Creating cluster...
     INFO Creating infrastructure...
     WARN Creating cloud resources, this could take a while...
-    INFO Creating Kubernetes Fury cluster...
+    INFO Creating SIGHUP Distribution cluster...
     WARN Creating cloud resources, this could take a while...
     INFO Saving furyctl configuration file in the cluster...
     INFO Saving distribution configuration file in the cluster...
-    INFO Installing Kubernetes Fury Distribution...
+    INFO Installing SIGHUP Distribution...
     WARN Creating cloud resources, this could take a while...
     INFO Checking that the cluster is reachable...
     INFO Applying manifests...
     INFO Saving furyctl configuration file in the cluster...
     INFO Saving distribution configuration file in the cluster...
-    INFO Kubernetes Fury cluster created successfully
+    INFO SIGHUP Distribution cluster created successfully
     INFO Please remember to kill the VPN connection when you finish doing operations on the cluster
     INFO To connect to the cluster, set the path to your kubeconfig with 'export KUBECONFIG=/private/tmp/getting-started/distro-on-eks/kubeconfig' or use the '--kubeconfig /private/tmp/getting-started/distro-on-eks/kubeconfig' flag in following executions
     ```
@@ -437,7 +437,7 @@ This is what you should see:
 
 #### Discover dashboards
 
-Fury provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
+SIGHUP Distribution provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
 
 1. Click on the search icon on the left sidebar.
 2. Write `pods` and click enter.
@@ -465,7 +465,7 @@ This is what you should see:
 
 ### (optional) Enforce a Policy with OPA Gatekeeper
 
-OPA Gatekeeper has been deployed as part of the distribution, [the module comes with a set of policies pre-defined][opa-module-docs].
+OPA Gatekeeper has been deployed as part of the distribution, [the module comes with a set of policies pre-defined][policy-module-docs].
 
 To test drive the default rules, try to create a simple deployment in the `default` namespace:
 
@@ -523,7 +523,7 @@ Clean up the demo environment:
 
 Congratulations, you made it! 🥳🥳
 
-We hope you enjoyed this tour of Fury!
+We hope you enjoyed this tour of SIGHUP Distribution!
 
 ### Issues/Feedback
 
@@ -536,7 +536,7 @@ More tutorials:
 - [SIGHUP Distribution on Minikube][distro-on-minikube]
 - [SIGHUP Distribution on VMs][distro-on-vms]
 
-More about Fury:
+More about SIGHUP Distribution:
 
 - [Documentation][docs]
 
@@ -548,7 +548,7 @@ More about Fury:
 [distro-on-vms]: https://github.com/sighupio/getting-started/tree/main/distro-on-vms
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
 [docs]: https://docs.sighup.io
-[opa-module-docs]: https://docs.sighup.io/docs/modules/opa/overview
+[policy-module-docs]: https://docs.sighup.io/docs/modules/opa/overview
 
 [aws-cli-installation]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-version.html
 
@@ -556,6 +556,6 @@ More about Fury:
 
 <!-- Images -->
 <!-- `media` here is a branch. We used to store all images in that branch and reference them from other branches -->
-[grafana-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/grafana.png?raw=true
-[grafana-screenshot-logs]: https://github.com/sighupio/fury-getting-started/blob/media/grafana-logs.png?raw=true
-[forecastle-eks-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/forecastle_eks.png?raw=true
+[grafana-screenshot]: https://github.com/sighupio/getting-started/blob/media/grafana.png?raw=true
+[grafana-screenshot-logs]: https://github.com/sighupio/getting-started/blob/media/grafana-logs.png?raw=true
+[forecastle-eks-screenshot]: https://github.com/sighupio/getting-started/blob/media/forecastle_eks.png?raw=true

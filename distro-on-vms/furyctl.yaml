@@ -60,14 +60,14 @@ spec:
         type: calico
       # This section contains all the configurations for the ingress module
       ingress:
-        baseDomain: fury.example.tld
+        baseDomain: sighup.example.tld
         nginx:
           type: single
           tls:
             provider: certManager
         certManager:
           clusterIssuer:
-            name: letsencrypt-fury
+            name: letsencrypt-sighup
             email: example@sighup.io
             solvers:
               - dns01:

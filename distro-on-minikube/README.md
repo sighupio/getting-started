@@ -73,7 +73,7 @@ In this directory, an example `furyctl.yaml` file is present.
 apiVersion: kfd.sighup.io/v1alpha2
 kind: KFDDistribution
 metadata:
-  name: fury-local
+  name: sighup-local
 spec:
   distributionVersion: v1.31.1
   distribution:
@@ -89,7 +89,7 @@ spec:
             provider: certManager
         certManager:
           clusterIssuer:
-            name: letsencrypt-fury
+            name: letsencrypt-sighup
             email: example@sighup.io
             type: http01
       logging:
@@ -175,12 +175,12 @@ INFO Checking that the cluster is reachable...
 INFO Cannot find state in cluster, skipping...
 INFO Running preupgrade phase...
 INFO Preupgrade phase completed successfully
-INFO Installing Kubernetes Fury Distribution...
+INFO Installing SIGHUP Distribution...
 INFO Checking that the cluster is reachable...
 INFO Checking storage classes...
 INFO Checking if all nodes are ready...
 INFO Applying manifests...
-INFO Kubernetes Fury Distribution installed successfully
+INFO SIGHUP Distribution cluster created successfully
 INFO Applying plugins...
 INFO Skipping plugins phase as spec.plugins is not defined
 INFO Saving furyctl configuration file in the cluster...
@@ -259,7 +259,7 @@ This is what you should see:
 
 #### Discover dashboards
 
-Fury provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
+SIGHUP Distribution provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
 
 1. Click on the search icon on the left sidebar.
 2. Write `pods` and click enter.
@@ -283,11 +283,11 @@ Take a look around and test the other dashboards available.
 
 Congratulations, you made it! 🥳🥳
 
-We hope you enjoyed this tour of Fury!
+We hope you enjoyed this tour of SIGHUP Distribution!
 
 ### Issues/Feedback
 
-In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/fury-getting-started/issues/new).
+In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/getting-started/issues/new).
 
 ### Where to go next?
 
@@ -296,7 +296,7 @@ More tutorials:
 - [SIGHUP Distribution on EKS][distro-on-eks]
 - [SIGHUP Distribution on VMs][distro-on-vms]
 
-More about Fury:
+More about SIGHUP Distribution:
 
 - [Documentation][docs]
 
@@ -307,6 +307,6 @@ More about Fury:
 [docs]: https://docs.sighup.io
 
 <!-- Images -->
-[grafana-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/grafana.png?raw=true
-[grafana-screenshot-logs]: https://github.com/sighupio/fury-getting-started/blob/media/grafana-logs.png?raw=true
-[forecastle-screenshot]: https://github.com/sighupio/fury-getting-started/blob/media/forecastle_minikube.png?raw=true
+[grafana-screenshot]: https://github.com/sighupio/getting-started/blob/media/grafana.png?raw=true
+[grafana-screenshot-logs]: https://github.com/sighupio/getting-started/blob/media/grafana-logs.png?raw=true
+[forecastle-screenshot]: https://github.com/sighupio/getting-started/blob/media/forecastle_minikube.png?raw=true
