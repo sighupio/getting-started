@@ -1,6 +1,6 @@
 # SIGHUP Distribution on EKS
 
-This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.31.0`
+This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.32.0`
 
 This tutorial covers the following steps:
 
@@ -67,7 +67,8 @@ is located at `/tmp/fury-getting-started/fury-on-eks/furyctl.yaml`.
 > ℹ️ You can also create a sample configuration file by running the following command:
 >
 > ```bash
-> furyctl create config --version v1.31.0 -c custom-furyctl.yaml
+> furyctl create config --kind EKSCluster --version v1.31.1 --config custom-furyctl.yaml
+
 > ```
 >
 > and edit the `custom-furyctl.yaml` file to fit your needs, when you are done you can use the `--config` flag to specify the path to the configuration file in the
@@ -91,7 +92,7 @@ kind: EKSCluster
 metadata:
   name: <CLUSTER_NAME>
 spec:
-  distributionVersion: "v1.31.0"
+  distributionVersion: "v1.31.1"
   toolsConfiguration:
     terraform:
       state:
