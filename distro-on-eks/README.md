@@ -465,7 +465,7 @@ This is what you should see:
 
 ### (optional) Enforce a Policy with OPA Gatekeeper
 
-OPA Gatekeeper has been deployed as part of the distribution, [the module comes with a set of policies pre-defined][opa-module-docs].
+OPA Gatekeeper has been deployed as part of the distribution, [the module comes with a set of policies pre-defined][policy-module-docs].
 
 To test drive the default rules, try to create a simple deployment in the `default` namespace:
 
@@ -548,7 +548,7 @@ More about SIGHUP Distribution:
 [distro-on-vms]: https://github.com/sighupio/getting-started/tree/main/distro-on-vms
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
 [docs]: https://docs.sighup.io
-[opa-module-docs]: https://docs.sighup.io/docs/modules/opa/overview
+[policy-module-docs]: https://docs.sighup.io/docs/modules/opa/overview
 
 [aws-cli-installation]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-version.html
 
