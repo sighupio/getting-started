@@ -7,7 +7,7 @@
 apiVersion: kfd.sighup.io/v1alpha2
 kind: KFDDistribution
 metadata:
-  name: fury-local
+  name: sighup-local
 spec:
   distributionVersion: v1.31.1
   distribution:
@@ -23,7 +23,7 @@ spec:
             provider: certManager
         certManager:
           clusterIssuer:
-            name: letsencrypt-fury
+            name: letsencrypt-sighup
             email: example@sighup.io
             type: http01
       logging:
