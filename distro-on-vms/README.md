@@ -44,7 +44,7 @@ Please use a different OS for the Load Balancers VMs (or disable them and create
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution. This guide assumes that furyctl version is at least 0.31.0. You can check with the following command:
+We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution. This guide assumes that furyctl version is at least 0.32.0. You can check with the following command:
 
 ```bash
 furyctl version
