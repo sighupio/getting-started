@@ -41,7 +41,7 @@ cd getting-started/distro-on-minikube
     ```bash
     export REPO_DIR=$PWD
     export KUBECONFIG=$REPO_DIR/kubeconfig
-    minikube start --kubernetes-version v1.31.5 --memory=16384m --cpus=6
+    minikube start --kubernetes-version v1.31.7 --memory=16384m --cpus=6
     ```
 
     > ⚠️ This command will spin up by default a single-node Kubernetes v1.31.5 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
@@ -56,7 +56,7 @@ cd getting-started/distro-on-minikube
 
     ```bash
     NAME       STATUS   ROLES           AGE   VERSION
-    minikube   Ready    control-plane   9s    v1.31.5
+    minikube   Ready    control-plane   9s    v1.31.7
     ```
 
 ## Step 3 - Install furyctl
@@ -75,7 +75,7 @@ kind: KFDDistribution
 metadata:
   name: fury-local
 spec:
-  distributionVersion: v1.31.0
+  distributionVersion: v1.31.1
   distribution:
     kubeconfig: "{env://KUBECONFIG}"
     modules:
