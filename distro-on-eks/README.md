@@ -156,7 +156,7 @@ The Kubernetes section of the `furyctl.yaml` file contains the following paramet
 
 ```yaml
   kubernetes:
-    nodePoolGlobalAmiType: alinux2023
+    nodePoolGlobalAmiType: alinux2
     nodePoolsLaunchKind: "launch_templates"
     nodeAllowedSshPublicKey: "{file:///path/to/id_rsa.pub}"
     logRetentionDays: 1
