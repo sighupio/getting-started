@@ -16,11 +16,11 @@ To follow this tutorial, you need:
 - **kubectl** - 1.31.x to interact with the cluster.
 - **Ansible** - used by furyctl to execute the roles from SD installers
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
-- Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.worker.tld`, etc.
+- Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.example.tld`, etc.
 - Fixed IP address for each VM.
 - Two VMs for the load balancer Nodes (at least 1vCPU 1GB RAM each)
 - An additional IP that will be used by keepalived to expose the two load balancers in HA, and a DNS record pointed to this IP for the control-plane address.
-- Three VMs for the master nodes (at least 2vCPU and 4GB RAM each)
+- Three VMs for the control-plane nodes (at least 2vCPU and 4GB RAM each)
 - Three VMs for the worker nodes (at least 4vCPU and 8GB RAM each)
 - `root` or passwordless sudo user SSH access to the VMs
 - Route53 credentials with permission to modify a zone (optional)
@@ -118,7 +118,7 @@ DNS.1 = sighup.example.tld
 DNS.2 = *.sighup.example.tld
 ```
 
-Change the values accordingly to your environment
+Change the values according to your environment
 
 ### cert-manager
 
@@ -128,7 +128,7 @@ SD includes cert-manager in its core packages and it is fully integrated with th
 
 ## Step 4 - Write the `furyctl.yaml` configuration file
 
-The next step is to write the cluster configuration file used by `furyctl`, in the tutorial directory is present a pre-compiled file that you can use as a starting point.
+The next step is to write the cluster configuration file used by `furyctl`, in the tutorial directory you can find a pre-compiled file that you can use as a starting point.
 
 We will explain in this step, what the main fields are for.
 
@@ -194,7 +194,7 @@ Next we need to define the load-balancer nodes, each node will have a name and a
 
 We can give to the HAProxy statistics ("stats") page a username and a password, and we can also add additional custom configuration to the HAProxy running the load balancers. For example, we are using the additional configuration to load balance the ingress battery using the same load balancers as the control plane address.
 
-#### Kubernetes Master and Worker nodes
+#### Kubernetes Control-plane and Worker nodes
 
 ```yaml
 spec:
@@ -219,7 +219,7 @@ spec:
         taints: []
 ```
 
-Next we define the masters node and the worker nodes. The FQDN that will be used for each node will be the concatenation of the name and the `.spec.kubernetes.dnsZone` field.
+Next we define the control-plane nodes and the worker nodes. The FQDN that will be used for each node will be the concatenation of the name and the `.spec.kubernetes.dnsZone` field.
 
 For example, `master1` will become `master1.example.tld`.
 
@@ -246,7 +246,7 @@ spec:
         type: calico
 ```
 
-In this piece of configuration, we are choosing to install Calico as CNI (Container Network Interface) in our cluster from the `module-networking` core module.
+In this piece of configuration, we are choosing to install Calico as CNI (Container Network Interface) in our cluster from the `networking` core module.
 
 #### Ingress core module
 
@@ -318,7 +318,7 @@ spec:
 
 This section configures the `module-logging` module. In this example we are installing Loki as log storage, and configuring the Logging operator with all the Flows and Outputs to send logs to the Loki stack.
 
-The minio configuration section is to deploy a minio cluster with the S3 bucket used by Loki to store logs, the storageSize selected defines the size for each minio disk, in total 6 disks split in 2 per 3 minio replicas.
+The minio configuration section is to deploy a MinIO cluster with the S3 bucket used by Loki to store logs, the storageSize selected defines the size for each MinIO disk, in total 6 disks split in 2 per 3 MinIO replicas.
 
 #### Monitoring core module
 
@@ -330,7 +330,7 @@ spec:
         type: prometheus
 ```
 
-This section configures the `module-monitoring` module. The complete stack with Prometheus based on kube-prometheus and other monitoring tools.
+This section configures the `monitoring` module, which installs a complete monitoring stack with Prometheus based on kube-prometheus and other monitoring tools.
 
 #### Policy (OPA) core module and Tracing core module
 
