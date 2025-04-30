@@ -562,7 +562,7 @@ More about SD:
 [distro-on-minikube]: https://github.com/sighupio/getting-started/tree/main/distro-on-minikube
 [distro-on-eks]: https://github.com/sighupio/getting-started/tree/main/distro-on-eks
 [docs]: https://docs.sighup.io
-[docs]: https://docs.sighup.io/docs/installation
+[docs-prod-install]: https://docs.sighup.io/docs/installation
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
 
 <!-- Images -->
