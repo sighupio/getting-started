@@ -2,6 +2,7 @@
 
 This step-by-step tutorial helps you deploy a full SIGHUP Distribution (SD) cluster on a set of already existing VMs.
 
+> [!TIP]
 > ☁️ If you prefer trying SD in a cloud environment, check out the [SIGHUP Distribution on EKS][distro-on-eks] tutorial.
 
 The goal of this tutorial is to introduce you to the main concepts of SD and how to work with its tooling.
@@ -16,12 +17,13 @@ To follow this tutorial, you need:
 - **Ansible** - used by furyctl to execute the roles from SD installers
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
 - Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.worker.tld`, etc.
-- Static IP address for each VM.
+- Fixed IP address for each VM.
 - Two VMs for the load balancer Nodes (at least 1vCPU 1GB RAM each)
 - An additional IP that will be used by keepalived to expose the two load balancers in HA, and a DNS record pointed to this IP for the control-plane address.
 - Three VMs for the master nodes (at least 2vCPU and 4GB RAM each)
 - Three VMs for the worker nodes (at least 4vCPU and 8GB RAM each)
 - `root` or passwordless sudo user SSH access to the VMs
+- Route53 credentials with permission to modify a zone (optional)
 
 > [!WARNING]
 > Support for the ARM platform is still in beta status, the Load Balancers installed with the `haproxy` role are not currently supported for RHEL and RHEL derivatives running on ARM. Please use a different OS for the Load Balancers VMs (or disable them and create your own load balancer).
@@ -41,7 +43,7 @@ To follow this tutorial, you need:
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution. This guide assumes that furyctl version is at least 0.31.0. You can check with the following command:
+We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.32.1. You can check with the following command:
 
 ```bash
 furyctl version
@@ -55,14 +57,12 @@ Kubernetes expects you to configure and use TLS to provide data encryption in tr
 furyctl create pki
 ```
 
-> 💡 **TIP**
->
+> [!TIP]
 > See the command's help for advanced options: `furyctl create pki --help`.
 
 <!-- spacer -->
 
-> ℹ️ **INFO**
->
+> [!INFO]
 > Learn more on [Kubernetes security documentation](https://kubernetes.io/docs/concepts/security/#control-plane-protection).
 
 After the initialization of the PKI, you should have a `pki` folder with the following contents:
@@ -81,16 +81,17 @@ pki
     └── sa.pub
 ```
 
-## Step 3 - Decide the strategy for the SSL certificates
+## Step 3 - Decide the strategy for the Ingress TLS certificates
 
 We use the HTTPS protocol to expose the SD ingresses securely. HTTPS relies on certificates that need to be present, there are two approaches to achieve this:
 
-1) Provide a self-signed certificate
+1) Provide the certificates and keys (like a self-signed certificate)
 2) Use cert-manager to generate the certificates
 
 ### Self-signed certificate
 
-If you are using the first approach, you need to have at hand the `tls.key`, `tls.crt`, and `ca.crt` files.
+If you are using the first approach and you don't have the needed `tls.key`, `tls.crt`, and `ca.crt` files you can generate a self-signed set using `openssl` or similar tools.
+
 To generate these files using `openssl`, you can run the following commands:
 
 ```bash
@@ -117,7 +118,7 @@ DNS.1 = sighup.example.tld
 DNS.2 = *.sighup.example.tld
 ```
 
-Change it accordingly to your environment
+Change the values accordingly to your environment
 
 ### cert-manager
 
@@ -127,9 +128,9 @@ SD includes cert-manager in its core packages and it is fully integrated with th
 
 ## Step 4 - Write the `furyctl.yaml` configuration file
 
-The next step is to write the configuration file used by `furyctl`, in the tutorial directory is present a pre-compiled file that you can use as a starting point.
+The next step is to write the cluster configuration file used by `furyctl`, in the tutorial directory is present a pre-compiled file that you can use as a starting point.
 
-We will explain in this step, what the important fields are for.
+We will explain in this step, what the main fields are for.
 
 ### `.spec.kubernetes`
 
@@ -146,7 +147,7 @@ spec:
 ```
 
 This first piece of configuration defines where to find the PKI files (created in step 1), and the SSH connection details for the `root` user.
-`keyPath` can be a relative or an absolute path.
+`keyPath` can be a relative or an absolute path to the SSH private key.
 
 #### Common DNS zone and networking
 
@@ -160,7 +161,7 @@ spec:
     svcCidr: 172.16.0.0/17
 ```
 
-Next we need to define the DNS zone used by all the nodes and the control-plane address. Also, we need to define the network CIDR for the Pods and network CIDR for the Kubernetes services used in the cluster. These CIDRs must not collide with the IPs of the nodes.
+Next we need to define the DNS zone used by all the nodes, and the control-plane address. Also, we need to define the network CIDR for the Pods and the network CIDR for the Kubernetes services used by the cluster. These CIDRs must not collide with the IPs of the nodes or other external networks that should be reachable from within the cluster.
 
 #### Load Balancers configuration
 
@@ -186,9 +187,12 @@ spec:
       additionalConfig: "{file://./haproxy-additional.cfg}"
 ```
 
-Next we need to define the load-balancer nodes, each node will have a name and an IP address, additionally, we are also enabling keepalived on an additional floating IP address, in this example `192.168.1.179`. **Important** check which is the main interface that will be used for the keepalived IP, in this example `enp0s8`.
+Next we need to define the load-balancer nodes, each node will have a name and an IP address, additionally, we are also enabling keepalived on an additional floating (virtual) IP address, in this example `192.168.1.179`.
 
-We need also to give the HAproxy statistics (stats) page a username and a password, and we can also add an additional config to the HAproxy running the load balancers. In the example file we are also balancing the ingress battery using the same load balancers as the control plane address.
+> [!IMPORTANT]
+> Check which is the main interface that will be used for the keepalived IP, in this example the interface name is `enp0s8`.
+
+We can give to the HAProxy statistics ("stats") page a username and a password, and we can also add additional custom configuration to the HAProxy running the load balancers. For example, we are using the additional configuration to load balance the ingress battery using the same load balancers as the control plane address.
 
 #### Kubernetes Master and Worker nodes
 
@@ -215,13 +219,13 @@ spec:
         taints: []
 ```
 
-Next we need to define the masters node and the worker nodes. The FQDN that will be used for each node will be the concatenation of the name and the `.spec.kubernetes.dnsZone` field.
+Next we define the masters node and the worker nodes. The FQDN that will be used for each node will be the concatenation of the name and the `.spec.kubernetes.dnsZone` field.
 
 For example, `master1` will become `master1.example.tld`.
 
 #### Custom registry for Kubernetes core components images
 
-We can override the URL of the registry where to pull images from for the Kubernetes core components (kube-apiserver, kube-controller-manager, kube-scheduler, kube-proxy, coredns). The host is mandatory, while the port is optional. For mirrors of the official registry, append `/fury/on-premises` at the end (the default value is `registry.sighup.io/fury/on-premises`).
+We can override the URL of the registry where to pull images from for the Kubernetes core components (kube-apiserver, kube-controller-manager, kube-scheduler, kube-proxy, coredns). The host is mandatory, while the port is optional. For mirrors of the official SIGHUP Distribution registry, append `/fury/on-premises` at the end (the default value is `registry.sighup.io/fury/on-premises`).
 
 ```yaml
 spec:
@@ -242,7 +246,7 @@ spec:
         type: calico
 ```
 
-In this piece of configuration, we are choosing to install calico as CNI in our cluster from the `module-networking` core module.
+In this piece of configuration, we are choosing to install Calico as CNI (Container Network Interface) in our cluster from the `module-networking` core module.
 
 #### Ingress core module
 
@@ -270,7 +274,7 @@ spec:
                       key: secret-access-key
 ```
 
-In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single battery of nginx ingress controller and configuring cert-manager as the provider to emit SSL certificates for our ingresses.
+In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single battery of Ingress NGINX Controller and configuring cert-manager as the provider to emit TLS certificates for our ingresses.
 `baseDomain` is the suffix hostname used on all the ingresses that will be created for the SD modules, for example, Grafana will become `grafana.<baseDomain>`.
 
 To correctly configure the cert-manager clusterIssuer we need to put a valid configuration for the `dns01` challenge solver. The secret `letsencrypt-production-route53-key` will be created using furyctl's plugins feature in the next steps.
@@ -290,7 +294,7 @@ To correctly configure the cert-manager clusterIssuer we need to put a valid con
 >            secret:
 >              cert: "{file://./tls.crt}"
 >              key: "{file://./tls.key}"
->              ca: "{file://./ca.crt}"
+>              ca: "{file://./ca.crt}" # this field can be empty if `cert` has the full chain and the CA is trusted (like Let's Encrypt)
 >        certManager:
 >          clusterIssuer:
 >            name: letsencrypt-sighup
@@ -314,7 +318,7 @@ spec:
 
 This section configures the `module-logging` module. In this example we are installing Loki as log storage, and configuring the Logging operator with all the Flows and Outputs to send logs to the Loki stack.
 
-The minio configuration is the S3 bucket used by Loki to store logs, the storageSize selected defines the size for each minio disk, in total 6 disks split in 2 per 3 minio replicas.
+The minio configuration section is to deploy a minio cluster with the S3 bucket used by Loki to store logs, the storageSize selected defines the size for each minio disk, in total 6 disks split in 2 per 3 minio replicas.
 
 #### Monitoring core module
 
@@ -326,7 +330,7 @@ spec:
         type: prometheus
 ```
 
-This section configures the `module-monitoring` module. The complete stack with Prometheus.
+This section configures the `module-monitoring` module. The complete stack with Prometheus based on kube-prometheus and other monitoring tools.
 
 #### Policy (OPA) core module and Tracing core module
 
@@ -340,7 +344,7 @@ spec:
         type: none
 ```
 
-For simplicity, we are not installing a policy system (Gatekeeper or Kyverno) and a tracing solution (Tempo) in the cluster.
+For simplicity, we are not installing a policy system (Gatekeeper or Kyverno) and a tracing solution (Tempo) in the cluster as part of this getting started guide.
 
 #### DR core module
 
@@ -366,11 +370,11 @@ spec:
           type: none
 ```
 
-This section configures the authentication for the ingresses and also the authentication via OIDC on the APIServer, for simplicity we are disabling the authentication on the ingresses and not configuring the OIDC authentication for the APIserver.
+This section can be used to configure the authentication for the ingresses and the authentication via OIDC to the Kubernetes API Server, for simplicity we are disabling the authentication on the ingresses and not configuring the OIDC authentication for the API server.
 
 #### Custom registry for distribution phase
 
-We can override the URL of the registry where to pull images from for the SD core modules. The host is mandatory, while the port is optional. For mirrors of the official registry, append `/fury` at the end (the default value is `registry.sighup.io/fury`).
+Just like we can override the registry for the Kubernetes components, we can also override the URL of the registry where to pull images from for the SD core modules. The host is mandatory, while the port is optional. For mirrors of the official SIGHUP Distribution registry, append `/fury` at the end (the default value is `registry.sighup.io/fury`).
 
 ```yaml
 spec:
@@ -379,7 +383,8 @@ spec:
       registry: <registry-host>[:<registry-port>]
 ```
 
-NOTE: If plugins are pulling from the default registry, the registry will be replaced for the plugins phase too.
+> [!WARNING]
+> If plugins are pulling from the official SIGHUP Distribution registry, the registry will be replaced for the plugins too.
 
 ### `.spec.plugins`
 
@@ -401,7 +406,7 @@ The second one, storage, installs the `local-path-provisioner` that provides a s
 
 ## Step 5 - Launch the installation with `furyctl`
 
-Now that everything is configured you can proceed with the installation using the `furyctl` CLI.
+Now that everything is configured you can proceed with applying the configuration using the `furyctl` CLI.
 
 Simply execute:
 
@@ -409,10 +414,11 @@ Simply execute:
 furyctl apply --outdir $PWD
 ```
 
+> [!INFO]
 > ⏱ The process will take some minutes to complete, you can follow the progress in detail by running the following command:
 >
 > ```bash
-> tail -f .furyctl/furyctl.<timestamp>-<random-id>.log | jq
+> tail -f .furyctl/furyctl.<timestamp>-<random-id>.log | jq -j '.msg'
 > ```
 >
 > `--outdir` flag is used to define in which directory to create the hidden `.furyctl` folder that contains all the required files to install the cluster.
@@ -445,13 +451,20 @@ INFO Saving furyctl configuration file in the cluster...
 INFO Saving distribution configuration file in the cluster...
 ```
 
-🚀 Success! The first deployment step is complete. Run `furyctl` again to install all the components that needs a working storageClass now, since we installed one using plugins function.
+🚀 Success! The first deployment step is complete. Note that furyctl is telling us that it skipped the installation of components that require storage because there was no storage class available. Run `furyctl` again to install all the components that need a working storageClass now, since we installed one using plugins function:
 
 ```bash
-furyctl create cluster --outdir $PWD --skip-deps-download
+furyctl apply --outdir $PWD --skip-deps-download --phase distribution
 ```
 
+> [!TIP]
 > To speed up the following executions, you can use `--skip-deps-download`. This works only if the `.furyctl` folder has been already initialized.
+
+<!-- spacer -->
+
+> [!TIP]
+> To run the first apply of all the phases and automatically run the distribution phase again, you can add the `--post-apply-phases distribution` flag in the first apply command.
+
 
 ```bash
 INFO Downloading distribution...
@@ -511,12 +524,12 @@ This is what you should see:
 
 ![Grafana Logs][grafana-screenshot-logs]
 
-#### Discover dashboards
+#### Discover the metrics dashboards
 
-SD provides some pre-configured dashboards to visualize the state of the cluster. Examine an example dashboard:
+SD provides some pre-configured dashboards to visualize the state of the cluster and its workload. Examine an example dashboard:
 
 1. Click on the search icon on the left sidebar.
-2. Write `pods` and click enter.
+2. Write `pods` and press Enter.
 3. Select the `Kubernetes/Pods` dashboard.
 
 This is what you should see:
@@ -543,11 +556,13 @@ More tutorials:
 More about SD:
 
 - [SD Documentation][docs]
+- [SD Production-grade Installation][docs-prod-install]
 
 <!-- Links -->
 [distro-on-minikube]: https://github.com/sighupio/getting-started/tree/main/distro-on-minikube
 [distro-on-eks]: https://github.com/sighupio/getting-started/tree/main/distro-on-eks
 [docs]: https://docs.sighup.io
+[docs]: https://docs.sighup.io/docs/installation
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
 
 <!-- Images -->
