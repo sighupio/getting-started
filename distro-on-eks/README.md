@@ -238,7 +238,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
       logging:
         type: loki
         loki:
-          tsdbStartDate: "2024-12-03"
+          retentionTime: "1d"
         minio:
           storageSize: 50Gi
       monitoring:

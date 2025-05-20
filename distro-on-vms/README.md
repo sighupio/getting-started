@@ -311,7 +311,7 @@ spec:
       logging:
         type: loki
         loki:
-          tsdbStartDate: "2024-12-03"
+          retentionTime: "1d"
         minio:
           storageSize: "20Gi"
 ```

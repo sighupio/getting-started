@@ -9,7 +9,7 @@ kind: EKSCluster
 metadata:
   name: <CLUSTER_NAME>
 spec:
-  distributionVersion: v1.32.0
+  distributionVersion: v1.31.1
   toolsConfiguration:
     terraform:
       state:
@@ -118,7 +118,7 @@ spec:
       logging:
         type: loki
         loki:
-          tsdbStartDate: "2024-12-03"
+          retentionTime: "1d"
         minio:
           storageSize: 50Gi
       monitoring:
