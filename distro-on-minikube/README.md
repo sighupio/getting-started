@@ -41,10 +41,10 @@ cd getting-started/distro-on-minikube
     ```bash
     export REPO_DIR=$PWD
     export KUBECONFIG=$REPO_DIR/kubeconfig
-    minikube start --kubernetes-version v1.31.7 --memory=16384m --cpus=6
+    minikube start --kubernetes-version v1.32.4 --memory=16384m --cpus=6
     ```
 
-    > ⚠️ This command will spin up by default a single-node Kubernetes v1.31.5 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
+    > ⚠️ This command will spin up by default a single-node Kubernetes v1.32.4 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
 
 2. Test the connection to the minikube cluster:
 
@@ -56,7 +56,7 @@ cd getting-started/distro-on-minikube
 
     ```bash
     NAME       STATUS   ROLES           AGE   VERSION
-    minikube   Ready    control-plane   9s    v1.31.7
+    minikube   Ready    control-plane   9s    v1.32.4
     ```
 
 ## Step 3 - Install furyctl
@@ -75,7 +75,7 @@ kind: KFDDistribution
 metadata:
   name: sighup-local
 spec:
-  distributionVersion: v1.31.1
+  distributionVersion: v1.32.0
   distribution:
     kubeconfig: "{env://KUBECONFIG}"
     modules:
@@ -95,7 +95,7 @@ spec:
       logging:
         type: loki
         loki:
-          tsdbStartDate: "2024-12-03"
+          retentionTime: "1d"
       monitoring:
         type: prometheus
       policy:

@@ -13,7 +13,7 @@ This tutorial assumes some basic familiarity with Kubernetes.
 
 To follow this tutorial, you need:
 
-- **kubectl** - 1.31.x to interact with the cluster.
+- **kubectl** - 1.32.x to interact with the cluster.
 - **Ansible** - used by furyctl to execute the roles from SD installers
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
 - Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.example.tld`, etc.
@@ -43,7 +43,7 @@ To follow this tutorial, you need:
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.32.1. You can check with the following command:
+We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.32.3. You can check with the following command:
 
 ```bash
 furyctl version
@@ -311,7 +311,7 @@ spec:
       logging:
         type: loki
         loki:
-          tsdbStartDate: "2024-12-03"
+          retentionTime: "1d"
         minio:
           storageSize: "20Gi"
 ```
