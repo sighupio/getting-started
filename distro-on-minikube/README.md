@@ -95,7 +95,7 @@ spec:
       logging:
         type: loki
         loki:
-          tsdbStartDate: "2024-12-03"
+          retentionTime: "1d"
       monitoring:
         type: prometheus
       policy:
