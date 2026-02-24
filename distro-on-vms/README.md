@@ -13,7 +13,7 @@ This tutorial assumes some basic familiarity with Kubernetes.
 
 To follow this tutorial, you need:
 
-- **kubectl** - 1.33.x to interact with the cluster.
+- **kubectl** - 1.34.x to interact with the cluster.
 - **Ansible** - used by furyctl to execute the roles from SD installers
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
 - Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.example.tld`, etc.
@@ -43,7 +43,7 @@ To follow this tutorial, you need:
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.32.3. You can check with the following command:
+We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.34.0. You can check with the following command:
 
 ```bash
 furyctl version
@@ -256,7 +256,7 @@ spec:
     modules:
       ingress:
         baseDomain: sighup.example.tld
-        nginx:
+        haproxy:
           type: single
           tls:
             provider: certManager
@@ -274,7 +274,7 @@ spec:
                       key: secret-access-key
 ```
 
-In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single battery of Ingress NGINX Controller and configuring cert-manager as the provider to emit TLS certificates for our ingresses.
+In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single HAProxy Ingress Controller and configuring cert-manager as the provider to emit TLS certificates for our ingresses.
 `baseDomain` is the suffix hostname used on all the ingresses that will be created for the SD modules, for example, Grafana will become `grafana.<baseDomain>`.
 
 To correctly configure the cert-manager clusterIssuer we need to put a valid configuration for the `dns01` challenge solver. The secret `letsencrypt-production-route53-key` will be created using furyctl's plugins feature in the next steps.
@@ -287,7 +287,7 @@ To correctly configure the cert-manager clusterIssuer we need to put a valid con
 >    modules:
 >      ingress:
 >        baseDomain: sighup.example.tld
->        nginx:
+>        haproxy:
 >          type: single
 >          tls:
 >            provider: secret

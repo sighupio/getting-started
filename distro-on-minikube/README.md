@@ -41,10 +41,10 @@ cd getting-started/distro-on-minikube
     ```bash
     export REPO_DIR=$PWD
     export KUBECONFIG=$REPO_DIR/kubeconfig
-    minikube start --kubernetes-version v1.33.1 --memory=16384m --cpus=6
+    minikube start --kubernetes-version v1.34.4 --memory=16384m --cpus=6
     ```
 
-    > ⚠️ This command will spin up by default a single-node Kubernetes v1.33.0 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
+    > ⚠️ This command will spin up by default a single-node Kubernetes v1.34.0 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
 
 2. Test the connection to the minikube cluster:
 
@@ -56,7 +56,7 @@ cd getting-started/distro-on-minikube
 
     ```bash
     NAME       STATUS   ROLES           AGE   VERSION
-    minikube   Ready    control-plane   9s    v1.33.0
+    minikube   Ready    control-plane   9s    v1.34.0
     ```
 
 ## Step 3 - Install furyctl
@@ -75,7 +75,7 @@ kind: KFDDistribution
 metadata:
   name: sighup-local
 spec:
-  distributionVersion: v1.33.1
+  distributionVersion: v1.34.0
   distribution:
     kubeconfig: "{env://KUBECONFIG}"
     modules:
@@ -83,7 +83,7 @@ spec:
         type: none
       ingress:
         baseDomain: demo.example.internal
-        nginx:
+        haproxy:
           type: single
           tls:
             provider: certManager
@@ -134,7 +134,7 @@ spec:
 In this example, we are installing the distribution with the following options:
 
 - No CNI installation, minikube comes with a CNI by default
-- A single battery of nginx
+- A single HAProxy Ingress Controller
 - Loki as storage for the logs
 - No gatekeeper installation
 - No velero and DR installation
@@ -143,10 +143,9 @@ In this example, we are installing the distribution with the following options:
 - Disabled master certificate-exporter, due to minikube incompatibilities
 
 > ℹ️ Usually, when using the dual ingress controller, the `internal.<ingress domain>` base domain is specified. For this occurence, since there is
-> just a single NGINX Ingress (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
+> just a single HAProxy Ingress Controller (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
 > Feel free to edit the furyctl.yaml file according to your needs. For more information see
-> [Ingress NGINX Dual](https://docs.sighup.io/docs/components/modules/ingress/dual-nginx) and
-> [Ingress NGINX Single](https://docs.sighup.io/docs/components/modules/ingress/nginx) documentation pages.
+> [SIGHUP Distribution Ingress](https://docs.sighup.io/docs/components/modules/ingress/) documentation pages.
 
 Execute the installation with furyctl:
 
