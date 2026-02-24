@@ -56,7 +56,7 @@ cd getting-started/distro-on-minikube
 
     ```bash
     NAME       STATUS   ROLES           AGE   VERSION
-    minikube   Ready    control-plane   9s    v1.34.0
+    minikube   Ready    control-plane   9s    v1.34.4
     ```
 
 ## Step 3 - Install furyctl
