@@ -274,7 +274,7 @@ spec:
                       key: secret-access-key
 ```
 
-In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single HAProxy Ingress Controller and configuring cert-manager as the provider to emit TLS certificates for our ingresses.
+In this section, on the configuration of the `module-ingress` core module, we are selecting to install a single HAProxy Kubernetes Ingress Controller and configuring cert-manager as the provider to emit TLS certificates for our ingresses.
 `baseDomain` is the suffix hostname used on all the ingresses that will be created for the SD modules, for example, Grafana will become `grafana.<baseDomain>`.
 
 To correctly configure the cert-manager clusterIssuer we need to put a valid configuration for the `dns01` challenge solver. The secret `letsencrypt-production-route53-key` will be created using furyctl's plugins feature in the next steps.

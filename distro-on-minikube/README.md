@@ -134,7 +134,7 @@ spec:
 In this example, we are installing the distribution with the following options:
 
 - No CNI installation, minikube comes with a CNI by default
-- A single HAProxy Ingress Controller
+- A single HAProxy Kubernetes Ingress Controller
 - Loki as storage for the logs
 - No gatekeeper installation
 - No velero and DR installation
@@ -143,7 +143,7 @@ In this example, we are installing the distribution with the following options:
 - Disabled master certificate-exporter, due to minikube incompatibilities
 
 > ℹ️ Usually, when using the dual ingress controller, the `internal.<ingress domain>` base domain is specified. For this occurence, since there is
-> just a single HAProxy Ingress Controller (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
+> just a single HAProxy Kubernetes Ingress Controller (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
 > Feel free to edit the furyctl.yaml file according to your needs. For more information see
 > [SIGHUP Distribution Ingress](https://docs.sighup.io/docs/components/modules/ingress/) documentation pages.
 
