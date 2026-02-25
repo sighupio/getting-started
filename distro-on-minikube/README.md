@@ -41,10 +41,10 @@ cd getting-started/distro-on-minikube
     ```bash
     export REPO_DIR=$PWD
     export KUBECONFIG=$REPO_DIR/kubeconfig
-    minikube start --kubernetes-version v1.33.1 --memory=16384m --cpus=6
+    minikube start --kubernetes-version v1.34.4 --memory=16384m --cpus=6
     ```
 
-    > ⚠️ This command will spin up by default a single-node Kubernetes v1.33.0 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
+    > ⚠️ This command will spin up by default a single-node Kubernetes v1.34.4 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
 
 2. Test the connection to the minikube cluster:
 
@@ -56,7 +56,7 @@ cd getting-started/distro-on-minikube
 
     ```bash
     NAME       STATUS   ROLES           AGE   VERSION
-    minikube   Ready    control-plane   9s    v1.33.0
+    minikube   Ready    control-plane   9s    v1.34.4
     ```
 
 ## Step 3 - Install furyctl
@@ -75,7 +75,7 @@ kind: KFDDistribution
 metadata:
   name: sighup-local
 spec:
-  distributionVersion: v1.33.1
+  distributionVersion: v1.34.0
   distribution:
     kubeconfig: "{env://KUBECONFIG}"
     modules:
@@ -83,7 +83,7 @@ spec:
         type: none
       ingress:
         baseDomain: demo.example.internal
-        nginx:
+        haproxy:
           type: single
           tls:
             provider: certManager
@@ -134,7 +134,7 @@ spec:
 In this example, we are installing the distribution with the following options:
 
 - No CNI installation, minikube comes with a CNI by default
-- A single battery of nginx
+- A single HAProxy Kubernetes Ingress Controller
 - Loki as storage for the logs
 - No gatekeeper installation
 - No velero and DR installation
@@ -143,10 +143,9 @@ In this example, we are installing the distribution with the following options:
 - Disabled master certificate-exporter, due to minikube incompatibilities
 
 > ℹ️ Usually, when using the dual ingress controller, the `internal.<ingress domain>` base domain is specified. For this occurence, since there is
-> just a single NGINX Ingress (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
+> just a single HAProxy Kubernetes Ingress Controller (for the purposes of this guide), only the ingress base domain is configured. Both, single or dual ingress configuration, are valid.
 > Feel free to edit the furyctl.yaml file according to your needs. For more information see
-> [Ingress NGINX Dual](https://docs.sighup.io/docs/components/modules/ingress/dual-nginx) and
-> [Ingress NGINX Single](https://docs.sighup.io/docs/components/modules/ingress/nginx) documentation pages.
+> [SIGHUP Distribution Ingress](https://docs.sighup.io/docs/components/modules/ingress/) documentation pages.
 
 Execute the installation with furyctl:
 
@@ -218,24 +217,24 @@ Now, you can reach the ingresses directly from your browser.
 
 > ℹ️ Note
 >
->If you are running minikube on macOS or Windows using Docker Desktop, you will need to port-forward the NGINX Ingress ports to localhost to enable access to your exposed applications.
+>If you are running minikube on macOS or Windows using Docker Desktop, you will need to port-forward the HAProxy Kubernetes Ingress Controller ports to localhost to enable access to your exposed applications.
 >For example, you can run:
 >
 > ```bash
->  kubectl port-forward service/ingress-nginx -n ingress-nginx 31080:80 31443:443
+>  kubectl port-forward service/haproxy-ingress -n ingress-haproxy 30080:80 30443:443
 >  # Output:
->  Forwarding from 127.0.0.1:31080 -> 8080
->  Forwarding from 127.0.0.1:31443 -> 8443
+>  Forwarding from 127.0.0.1:30080 -> 8080
+>  Forwarding from 127.0.0.1:30443 -> 8443
 >```
 >
->This command will forward both HTTP and HTTPS ports of the NGINX Ingress Controller to your localhost on ports 31080 and 31443 respectively.
+>This command will forward both HTTP and HTTPS ports of the HAProxy Kubernetes Ingress Controller to your localhost on ports 30080 and 30443 respectively.
 >Leave that terminal window open while you need access to your applications. Inside your /etc/hosts file you can put 127.0.0.1 in place of minikube's IP.
 
 ### Forecastle
 
 [Forecastle](https://github.com/stakater/Forecastle) is an open-source control panel where you can access all exposed applications running on Kubernetes.
 
-Navigate to https://directory.demo.example.internal:31443 to see all the other ingresses deployed, grouped by namespace.
+Navigate to https://directory.demo.example.internal:30443 to see all the other ingresses deployed, grouped by namespace.
 
 ![Forecastle][forecastle-screenshot]
 
@@ -243,7 +242,7 @@ Navigate to https://directory.demo.example.internal:31443 to see all the other i
 
 [Grafana](https://github.com/grafana/grafana) is an open-source platform for monitoring and observability. Grafana allows you to query, visualize, alert, and understand your metrics.
 
-Navigate to https://grafana.demo.example.internal:31443 or click the Grafana icon from Forecastle (remember to append the port 31443 to the url).
+Navigate to https://grafana.demo.example.internal:30443 or click the Grafana icon from Forecastle (remember to append the port 30443 to the url).
 
 #### Discover the logs
 

@@ -1,6 +1,6 @@
 # SIGHUP Distribution on EKS
 
-This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.33.1`
+This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.34.0`
 
 This tutorial covers the following steps:
 
@@ -67,7 +67,7 @@ is located at `/tmp/getting-started/distro-on-eks/furyctl.yaml`.
 > ℹ️ You can also create a sample configuration file by running the following command:
 >
 > ```bash
-> furyctl create config --kind EKSCluster --version v1.33.1 --config custom-furyctl.yaml
+> furyctl create config --kind EKSCluster --version v1.34.0 --config custom-furyctl.yaml
 
 > ```
 >
@@ -92,9 +92,9 @@ kind: EKSCluster
 metadata:
   name: <CLUSTER_NAME>
 spec:
-  distributionVersion: "v1.33.1"
+  distributionVersion: "v1.34.0"
   toolsConfiguration:
-    terraform:
+    opentofu:
       state:
         s3:
           bucketName: <S3_TFSTATE_BUCKET>
@@ -219,7 +219,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
     modules:
       ingress:
         baseDomain: internal.demo.example.dev
-        nginx:
+        haproxy:
           type: dual
           tls:
             provider: certManager
@@ -264,7 +264,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
 
 In this example, we are installing the distribution with the following options:
 
-- A dual Nginx setup, one private and one public
+- A dual HAProxy setup, one private and one public
 - Cert-manager with dns01 setup with route53
 - Loki as storage for the logs
 - Basic Auth on the ingresses
@@ -340,7 +340,7 @@ In the previous section, alongside the distribution, you have deployed Kubernete
 - `prometheus.internal.demo.example.dev`
 - `alertmanager.internal.demo.example.dev`
 
-These ingresses are only reachable from the private network, since in this example we configured nginx to use a dual setup, one exposed to the internet and one private.
+These ingresses are only reachable from the private network, since in this example we configured HAProxy to use a dual setup, one exposed to the internet and one private.
 
 To reach the LoadBalancer that is exposing the services, you need to connect via VPN and you should be able to resolve these URLs and reach them.
 
