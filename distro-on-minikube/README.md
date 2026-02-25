@@ -217,24 +217,24 @@ Now, you can reach the ingresses directly from your browser.
 
 > ℹ️ Note
 >
->If you are running minikube on macOS or Windows using Docker Desktop, you will need to port-forward the NGINX Ingress ports to localhost to enable access to your exposed applications.
+>If you are running minikube on macOS or Windows using Docker Desktop, you will need to port-forward the HAProxy Kubernetes Ingress Controller ports to localhost to enable access to your exposed applications.
 >For example, you can run:
 >
 > ```bash
->  kubectl port-forward service/ingress-nginx -n ingress-nginx 31080:80 31443:443
+>  kubectl port-forward service/haproxy-ingress -n ingress-haproxy 30080:80 30443:443
 >  # Output:
->  Forwarding from 127.0.0.1:31080 -> 8080
->  Forwarding from 127.0.0.1:31443 -> 8443
+>  Forwarding from 127.0.0.1:30080 -> 8080
+>  Forwarding from 127.0.0.1:30443 -> 8443
 >```
 >
->This command will forward both HTTP and HTTPS ports of the NGINX Ingress Controller to your localhost on ports 31080 and 31443 respectively.
+>This command will forward both HTTP and HTTPS ports of the HAProxy Kubernetes Ingress Controller to your localhost on ports 30080 and 30443 respectively.
 >Leave that terminal window open while you need access to your applications. Inside your /etc/hosts file you can put 127.0.0.1 in place of minikube's IP.
 
 ### Forecastle
 
 [Forecastle](https://github.com/stakater/Forecastle) is an open-source control panel where you can access all exposed applications running on Kubernetes.
 
-Navigate to https://directory.demo.example.internal:31443 to see all the other ingresses deployed, grouped by namespace.
+Navigate to https://directory.demo.example.internal:30443 to see all the other ingresses deployed, grouped by namespace.
 
 ![Forecastle][forecastle-screenshot]
 
@@ -242,7 +242,7 @@ Navigate to https://directory.demo.example.internal:31443 to see all the other i
 
 [Grafana](https://github.com/grafana/grafana) is an open-source platform for monitoring and observability. Grafana allows you to query, visualize, alert, and understand your metrics.
 
-Navigate to https://grafana.demo.example.internal:31443 or click the Grafana icon from Forecastle (remember to append the port 31443 to the url).
+Navigate to https://grafana.demo.example.internal:30443 or click the Grafana icon from Forecastle (remember to append the port 30443 to the url).
 
 #### Discover the logs
 

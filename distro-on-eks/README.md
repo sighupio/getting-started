@@ -264,7 +264,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
 
 In this example, we are installing the distribution with the following options:
 
-- A dual Nginx setup, one private and one public
+- A dual HAProxy setup, one private and one public
 - Cert-manager with dns01 setup with route53
 - Loki as storage for the logs
 - Basic Auth on the ingresses
