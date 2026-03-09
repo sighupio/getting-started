@@ -256,6 +256,8 @@ spec:
     modules:
       ingress:
         baseDomain: sighup.example.tld
+        nginx:
+          type: none
         haproxy:
           type: single
           tls:
@@ -287,6 +289,8 @@ To correctly configure the cert-manager clusterIssuer we need to put a valid con
 >    modules:
 >      ingress:
 >        baseDomain: sighup.example.tld
+>        nginx:
+>          type: none
 >        haproxy:
 >          type: single
 >          tls:

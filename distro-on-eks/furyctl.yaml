@@ -99,6 +99,8 @@ spec:
     modules:
       ingress:
         baseDomain: internal.demo.example.dev
+        nginx:
+          type: none
         haproxy:
           type: dual
           tls:

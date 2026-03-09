@@ -219,6 +219,8 @@ The Distribution section of the `furyctl.yaml` file contains the following param
     modules:
       ingress:
         baseDomain: internal.demo.example.dev
+        nginx:
+          type: none
         haproxy:
           type: dual
           tls:
