@@ -83,6 +83,8 @@ spec:
         type: none
       ingress:
         baseDomain: demo.example.internal
+        nginx:
+          type: none
         haproxy:
           type: single
           tls:

@@ -61,6 +61,8 @@ spec:
       # This section contains all the configurations for the ingress module
       ingress:
         baseDomain: sighup.example.tld
+        nginx:
+          type: none
         haproxy:
           type: single
           tls:
