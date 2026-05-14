@@ -43,7 +43,7 @@ To follow this tutorial, you need:
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.34.0. You can check with the following command:
+We recommend to always install the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that furyctl version is at least 0.34.1. You can check with the following command:
 
 ```bash
 furyctl version
