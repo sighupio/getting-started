@@ -3,3 +3,4 @@ vendor
 legacy/fury-on-ovhcloud/infrastructure/ovhrc
 .terraform*
 terraform.tfstate*
+/.idea/
