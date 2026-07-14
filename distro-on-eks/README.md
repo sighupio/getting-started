@@ -254,7 +254,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
       policy:
         type: gatekeeper
         gatekeeper:
-          enforcementAction: warn
+          enforcementAction: deny
           installDefaultPolicies: true
       auth:
         provider:
