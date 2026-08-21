@@ -191,6 +191,12 @@ INFO Saving distribution configuration file in the cluster...
 
 🚀 The (subset of the) distribution is finally deployed! In this section you will explore some of its features.
 
+To see a summary of the cluster, you can run `furyctl get cluster-info`. It shows the SD version and kind, the installer version, the available upgrade paths, the Kubernetes version, and the installed modules and plugins. Add `--format json` or `--format yaml` for a machine-readable output.
+
+```bash
+furyctl get cluster-info
+```
+
 ## Step 4 - Explore the distribution
 
 ### Setup local DNS
@@ -290,7 +296,9 @@ We hope you enjoyed this tour of SIGHUP Distribution!
 
 ### Issues/Feedback
 
-In case you ran into any problems feel free to [open an issue in GitHub](https://github.com/sighupio/getting-started/issues/new).
+In case you ran into any problems with this tutorial, feel free to [open an issue in the getting-started repository](https://github.com/sighupio/getting-started/issues/new).
+
+If the installation itself failed, please [open an issue in the SIGHUP Distribution repository](https://github.com/sighupio/distribution/issues/new/choose) instead: it has issue templates, and its maintainers triage the components installed here.
 
 ### Where to go next?
 
