@@ -1,0 +1,193 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/sighupio/distribution/v1.35.1/schemas/public/immutable-kfd-v1alpha2.json
+
+---
+apiVersion: kfd.sighup.io/v1alpha2
+kind: Immutable
+metadata:
+  name: getting-started
+spec:
+  distributionVersion: v1.35.1
+
+  infrastructure:
+    # The public key is written into every machine. furyctl uses the private key to connect
+    # to the machines after they boot.
+    ssh:
+      username: core
+      privateKeyPath: ./ssh-key
+      publicKeyPath: ./ssh-key.pub
+
+    # Address of the boot server that furyctl starts. Every machine must reach this address.
+    ipxeServer:
+      url: http://furyctl.example.com:8080
+
+    nodes:
+      # Load balancer machines
+      # Set `arch` on every node. Do not rely on a default value.
+      - hostname: lb1.example.com
+        macAddress: "52:54:00:00:00:01"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      - hostname: lb2.example.com
+        macAddress: "52:54:00:00:00:02"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      # Control-plane machines
+      - hostname: cp1.example.com
+        macAddress: "52:54:00:01:00:01"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      - hostname: cp2.example.com
+        macAddress: "52:54:00:01:00:02"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      - hostname: cp3.example.com
+        macAddress: "52:54:00:01:00:03"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      # Worker machines
+      - hostname: worker1.example.com
+        macAddress: "52:54:00:02:00:01"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      - hostname: worker2.example.com
+        macAddress: "52:54:00:02:00:02"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+      - hostname: worker3.example.com
+        macAddress: "52:54:00:02:00:03"
+        arch: x86-64
+        storage:
+          installDisk: /dev/sda
+        network:
+          ethernets:
+            eth0:
+              dhcp4: true
+
+    loadBalancers:
+      members:
+        - hostname: lb1.example.com
+        - hostname: lb2.example.com
+      keepalived:
+        enabled: true
+        interface: eth0
+        ip: 192.168.1.179
+        virtualRouterId: "201"
+        passphrase: "b16cf069"
+      haproxy:
+        configuration: "{file://./haproxy.cfg}"
+
+  kubernetes:
+    pkiPath: ./pki
+    networking:
+      podCIDR: 172.16.128.0/17
+      serviceCIDR: 172.16.0.0/17
+    controlPlane:
+      address: control-plane.example.com:6443
+      members:
+        - hostname: cp1.example.com
+        - hostname: cp2.example.com
+        - hostname: cp3.example.com
+    nodeGroups:
+      - name: worker
+        nodes:
+          - hostname: worker1.example.com
+          - hostname: worker2.example.com
+          - hostname: worker3.example.com
+
+  distribution:
+    modules:
+      networking:
+        type: cilium
+
+      ingress:
+        baseDomain: sighup.example.com
+        nginx:
+          type: none
+        haproxy:
+          type: single
+          tls:
+            provider: secret
+            secret:
+              cert: "{file://./tls.crt}"
+              key: "{file://./tls.key}"
+              # Leave this field empty when `cert` holds the full chain and the CA is trusted.
+              ca: "{file://./ca.crt}"
+        certManager:
+          clusterIssuer:
+            name: letsencrypt-sighup
+            email: example@sighup.io
+            type: http01
+
+      logging:
+        type: loki
+        loki:
+          retentionTime: "1d"
+        minio:
+          storageSize: "20Gi"
+
+      monitoring:
+        type: prometheus
+
+      policy:
+        type: none
+
+      tracing:
+        type: none
+
+      dr:
+        type: on-premises
+        velero: {}
+
+      auth:
+        provider:
+          type: none
+
+  plugins:
+    kustomize:
+      - name: local-storage
+        folder: ./local-storage
