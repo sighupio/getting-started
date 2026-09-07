@@ -61,7 +61,7 @@ furyctl create pki
 
 <!-- spacer -->
 
-> [!INFO]
+> [!NOTE]
 > Learn more on [Kubernetes security documentation](https://kubernetes.io/docs/concepts/security/#control-plane-protection).
 
 After the initialization of the PKI, you should have a `pki` folder with the following contents:
@@ -417,7 +417,7 @@ Simply execute:
 furyctl apply --outdir $PWD
 ```
 
-> [!INFO]
+> [!TIP]
 > ⏱ The process will take some minutes to complete, you can follow the progress in detail by running the following command:
 >
 > ```bash
