@@ -21,7 +21,7 @@ This tutorial assumes some basic familiarity with Kubernetes and AWS.
 To follow this tutorial, you need:
 
 - **AWS Access Credentials** of an AWS Account with the following [IAM permissions][terraform-aws-eks-iam-permissions].
-- **AWS CLI** - version >= 2.8.12 at the time of writing this tutorial. You can check your version by running `aws --version`. If you don't have it installed, follow the [official guide][aws-cli-installation].
+- **AWS CLI** - version 2.24.17 at the time of writing this tutorial. You can check your version by running `aws --version`. If you don't have it installed, follow the [official guide][aws-cli-installation].
 - **OpenVPN client** - if `spec.infrastructure.vpn` is defined, you need the OpenVPN client to connect to the VPN server (see [OpenVPN client downloads][openvpn-client-downloads]).
 
 ### Setup and initialize the environment
