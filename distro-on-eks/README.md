@@ -1,6 +1,6 @@
 # SIGHUP Distribution on EKS
 
-This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.35.0`
+This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.35.1`
 
 This tutorial covers the following steps:
 
@@ -21,7 +21,7 @@ This tutorial assumes some basic familiarity with Kubernetes and AWS.
 To follow this tutorial, you need:
 
 - **AWS Access Credentials** of an AWS Account with the following [IAM permissions][terraform-aws-eks-iam-permissions].
-- **AWS CLI** - version 2.22.8 at the time of writing this tutorial. You can check your version by running `aws --version`. If you don't have it installed, follow the [official guide][aws-cli-installation].
+- **AWS CLI** - version 2.24.17 at the time of writing this tutorial. You can check your version by running `aws --version`. If you don't have it installed, follow the [official guide][aws-cli-installation].
 - **OpenVPN client** - if `spec.infrastructure.vpn` is defined, you need the OpenVPN client to connect to the VPN server (see [OpenVPN client downloads][openvpn-client-downloads]).
 
 ### Setup and initialize the environment
@@ -68,7 +68,7 @@ is located at `/tmp/getting-started/distro-on-eks/furyctl.yaml`.
 > ℹ️ You can also create a sample configuration file by running the following command:
 >
 > ```bash
-> furyctl create config --kind EKSCluster --version v1.35.0 --config custom-furyctl.yaml
+> furyctl create config --kind EKSCluster --version v1.35.1 --config custom-furyctl.yaml
 > ```
 >
 > and edit the `custom-furyctl.yaml` file to fit your needs, when you are done you can use the `--config` flag to specify the path to the configuration file in the
@@ -92,7 +92,7 @@ kind: EKSCluster
 metadata:
   name: <CLUSTER_NAME>
 spec:
-  distributionVersion: "v1.35.0"
+  distributionVersion: "v1.35.1"
   toolsConfiguration:
     opentofu:
       state:
