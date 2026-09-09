@@ -42,7 +42,7 @@ To follow this tutorial, you need:
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend always installing the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that the furyctl version is at least 0.35.0. You can check with the following command:
+We recommend always installing the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that the furyctl version is at least 0.35.1. You can check with the following command:
 
 ```bash
 furyctl version
