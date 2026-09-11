@@ -66,6 +66,32 @@ Each machine also needs:
 - Network boot first in the boot order.
 - A way to start [iPXE][ipxe]. Read [Network boot](#network-boot) below.
 
+### Information to collect
+
+Collect this information for each machine before you write the configuration file. Step 5 puts each
+item into `furyctl.yaml`.
+
+| Item                              | Field in `furyctl.yaml`           | Notes                                                                       |
+| --------------------------------- | --------------------------------- | --------------------------------------------------------------------------- |
+| Full host name                    | `hostname`                        | Your DNS must resolve this name to the IP address of the machine.           |
+| MAC address of the boot interface | `macAddress`                      | It selects the configuration of the machine. Your DHCP server also uses it. |
+| CPU architecture                  | `arch`                            | `x86-64` or `arm64`. It selects the Flatcar and sysext packages.            |
+| Install disk                      | `storage.installDisk`             | The device path, for example `/dev/sda`. Read the tip below.                |
+| Name of the network interface     | the key below `network.ethernets` | For example `eth0` or `enp1s0`. A wrong name leaves the machine offline.    |
+
+For the two load balancer machines, you also need the name of the interface that receives the
+virtual IP. It goes into `loadBalancers.keepalived.interface`.
+
+> [!TIP]
+> A name such as `/dev/sda` can change between boots. To always select the same disk, use a stable
+> path from `/dev/disk/by-path/` or `/dev/disk/by-id/`.
+
+<!-- spacer -->
+
+> [!NOTE]
+> If you give a machine a fixed address instead of DHCP, you also need its IP address, its gateway,
+> and its DNS servers.
+
 ### Network
 
 - A **DHCP server** that you can modify. It must send **option 67** to the machines, so that they reach
