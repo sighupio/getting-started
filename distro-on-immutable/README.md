@@ -63,8 +63,16 @@ Each machine also needs:
 - An empty install disk, for example `/dev/sda`. The installer writes over its content. If the disk
   already holds a Flatcar installation, the installer stops instead.
 - A stable IP address. This tutorial uses DHCP with a reservation for each machine.
-- Network boot first in the boot order.
+- The ability to boot over the network, and a boot order that puts the disk before the network.
 - A way to start [iPXE][ipxe]. Read [Network boot](#network-boot) below.
+
+> [!WARNING]
+> Put the disk before the network in the boot order. While the install disk is empty, the firmware finds
+> no operating system and falls back to the network. This starts the installation. After the installation,
+> the machine boots Flatcar from the disk.
+>
+> If the network comes before the disk, the machine starts the installer again at every reboot. The
+> installation never completes.
 
 ### Information to collect
 
