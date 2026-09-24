@@ -129,6 +129,53 @@ Each machine must run [iPXE][ipxe], and then chain to the `furyctl` boot server 
   DHCP gives the firmware the URL of an `ipxe.efi` file. You host this file on your own HTTP server, and
   you get it from the [iPXE download page][ipxe-download]. `furyctl` does not supply this file. Virtual
   machines usually need this path, because their UEFI firmware has no iPXE ROM.
+- **The firmware runs PXE only.** The firmware cannot download files over HTTP. It loads iPXE from a
+  TFTP server, and then iPXE chains to the boot server. Read the [dnsmasq example](#example-pxe-chainloading-with-dnsmasq)
+  below.
+
+#### Example: PXE chainloading with dnsmasq
+
+[dnsmasq][dnsmasq] can be the DHCP server and the TFTP server. Put the iPXE binaries from the
+[iPXE download page][ipxe-download] in the TFTP root: `ipxe.efi` for UEFI and `undionly.kpxe` for
+legacy BIOS. This is a full dnsmasq configuration:
+
+> [!WARNING]
+> Use this example only if dnsmasq replaces your DHCP server. A network must have only one DHCP server.
+
+```ini
+# DHCP. Change these values for your network.
+interface=eth0
+dhcp-range=192.168.1.100,192.168.1.150,255.255.255.0,12h
+dhcp-option=option:router,192.168.1.1
+dhcp-option=option:dns-server,192.168.1.1
+
+# One reservation for each machine: MAC address, name, IP address.
+dhcp-host=52:54:00:00:00:01,lb1,192.168.1.171
+dhcp-host=52:54:00:00:00:02,lb2,192.168.1.172
+dhcp-host=52:54:00:01:00:01,cp1,192.168.1.181
+dhcp-host=52:54:00:01:00:02,cp2,192.168.1.182
+dhcp-host=52:54:00:01:00:03,cp3,192.168.1.183
+dhcp-host=52:54:00:02:00:01,worker1,192.168.1.191
+dhcp-host=52:54:00:02:00:02,worker2,192.168.1.192
+dhcp-host=52:54:00:02:00:03,worker3,192.168.1.193
+
+enable-tftp
+tftp-root=/var/lib/tftpboot
+
+# iPXE sends the user class "iPXE". Tag these clients.
+dhcp-userclass=set:ipxe,iPXE
+# Tag the legacy BIOS clients (client architecture 0).
+dhcp-match=set:bios,option:client-arch,0
+
+# iPXE: go to the furyctl boot server.
+dhcp-boot=tag:ipxe,http://furyctl.example.com:8080/boot.ipxe
+# PXE only: load iPXE over TFTP.
+dhcp-boot=tag:!ipxe,tag:bios,undionly.kpxe
+dhcp-boot=tag:!ipxe,tag:!bios,ipxe.efi
+```
+
+The first boot uses PXE and loads iPXE. iPXE then sends a new DHCP request with the `iPXE` user class,
+and gets the URL of the boot server. The `ipxe` tag stops a boot loop.
 
 > [!TIP]
 > You can avoid a second HTTP server. The boot server of `furyctl` serves every file in
@@ -862,6 +909,7 @@ More about SD:
 [ignition]: https://coreos.github.io/ignition/
 [ipxe]: https://ipxe.org/
 [ipxe-download]: https://ipxe.org/download
+[dnsmasq]: https://thekelleys.org.uk/dnsmasq/doc.html
 
 <!-- Images -->
 [grafana-screenshot]: https://github.com/sighupio/getting-started/blob/media/grafana.png?raw=true
