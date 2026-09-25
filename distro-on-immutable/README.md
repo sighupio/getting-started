@@ -60,8 +60,9 @@ You need 8 machines:
 
 Each machine also needs:
 
-- An empty install disk, for example `/dev/sda`. The installer writes over its content. If the disk
-  already holds a Flatcar installation, the installer stops instead.
+- A dedicated install disk for the operating system only, for example `/dev/sda`. The installer writes
+  over all of its content. Erase the disk before the installation: if the disk already holds a Flatcar
+  installation, the installer stops instead.
 - A stable IP address. This tutorial uses DHCP with a reservation for each machine.
 - The ability to boot over the network, and a boot order that puts the disk before the network.
 - A way to start [iPXE][ipxe]. Read [Network boot](#network-boot) below.
@@ -106,11 +107,15 @@ virtual IP. It goes into `loadBalancers.keepalived.interface`.
   the `furyctl` boot server. The [existing DHCP with PXE flags][immutable-case-dhcp] case documents
   the rules to add. If you cannot modify your DHCP server, read the
   [Immutable Installation Guide][immutable-install]. Then select one of the other three boot cases.
-- A **DNS server** that resolves the name of each machine to its IP address. The tutorial uses the
-  `example.com` domain, for example `cp1.example.com`.
+- A **DNS server** that resolves the name of each machine to its IP address. All machines and the
+  `furyctl` host must resolve these names, because etcd uses them to form its cluster. The tutorial uses
+  the `example.com` domain, for example `cp1.example.com`.
 - One free IP address for the `keepalived` virtual IP. The tutorial uses `192.168.1.179`.
 - A DNS record `control-plane.example.com` that points to the virtual IP.
 - A wildcard DNS record `*.sighup.example.com` that points to the virtual IP.
+- Access to an **NTP server** from each machine. By default, Flatcar uses the NTP servers that DHCP
+  sends. If DHCP sends no NTP servers, Flatcar uses the public `flatcar.pool.ntp.org` pool on the internet.
+  To use your own NTP servers, read [Configuring date and time zone][flatcar-ntp].
 - Access to the internet, to download the Flatcar images and the container images.
 
 > [!IMPORTANT]
@@ -908,6 +913,7 @@ More about SD:
 [flatcar-passwd]: https://coreos.github.io/butane/config-flatcar-v1_1/
 [ignition]: https://coreos.github.io/ignition/
 [ipxe]: https://ipxe.org/
+[flatcar-ntp]: https://www.flatcar.org/docs/latest/os-config/host-config/configuring-date-and-timezone/
 [ipxe-download]: https://ipxe.org/download
 [dnsmasq]: https://thekelleys.org.uk/dnsmasq/doc.html
 
