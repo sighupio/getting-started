@@ -218,7 +218,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
           value: infra
     modules:
       ingress:
-        baseDomain: internal.demo.example.dev
+        baseDomain: internal.demo.example.com
         nginx:
           type: none
         haproxy:
@@ -228,14 +228,14 @@ The Distribution section of the `furyctl.yaml` file contains the following param
         certManager:
           clusterIssuer:
             name: letsencrypt-sighup
-            email: admin@example.dev
+            email: admin@example.com
             type: dns01
         dns:
           public:
-            name: demo.example.dev
+            name: demo.example.com
             create: true
           private:
-            name: internal.demo.example.dev
+            name: internal.demo.example.com
             create: true
       logging:
         type: loki
@@ -274,7 +274,7 @@ In this example, we are installing the distribution with the following options:
 Replace the field `<S3_VELERO_BUCKET_NAME>` with the name of the S3 bucket that will be used to store the Velero backups. Notice that **`furyctl` will create this bucket for you**.
 You can configure the existing modules or add new ones (take a look to the [docs][distribution-eks-reference]) should you prefer.
 
-You should also change the `example.dev` domain with a real one that you own, to be able to leverage the auto-ssl capabilities using cert-manager.
+You should also change the `example.com` domain with a real one that you own, to be able to leverage the auto-ssl capabilities using cert-manager.
 
 From these parameters, `furyctl` will automatically configure and deploy the battle-tested SIGHUP Distribution.
 
@@ -350,11 +350,11 @@ furyctl get cluster-info
 
 In the previous section, alongside the distribution, you have deployed Kubernetes ingresses to expose underlying services at the following HTTP routes:
 
-- `directory.internal.demo.example.dev`
-- `gpm.internal.demo.example.dev`
-- `grafana.internal.demo.example.dev`
-- `prometheus.internal.demo.example.dev`
-- `alertmanager.internal.demo.example.dev`
+- `directory.internal.demo.example.com`
+- `gpm.internal.demo.example.com`
+- `grafana.internal.demo.example.com`
+- `prometheus.internal.demo.example.com`
+- `alertmanager.internal.demo.example.com`
 
 These ingresses are only reachable from the private network, since in this example we configured HAProxy to use a dual setup, one exposed to the internet and one private.
 
@@ -371,7 +371,7 @@ aws route53 list-hosted-zones | cat
     "HostedZones": [
         {
             "Id": "/hostedzone/Z0993238TFEEUFQUA7T8",
-            "Name": "demo.example.dev.",
+            "Name": "demo.example.com.",
             "CallerReference": "terraform-20230904104525356400000001",
             "Config": {
                 "Comment": "Managed by Terraform",
@@ -381,7 +381,7 @@ aws route53 list-hosted-zones | cat
         },
         {
             "Id": "/hostedzone/Z00537863VMG5BHXEMRYA",
-            "Name": "internal.demo.example.dev.",
+            "Name": "internal.demo.example.com.",
             "CallerReference": "terraform-20230904104525356600000002",
             "Config": {
                 "Comment": "Managed by Terraform",
@@ -400,7 +400,7 @@ aws route53 list-resource-record-sets --hosted-zone-id Z0993238TFEEUFQUA7T8 | ca
 {
     "ResourceRecordSets": [
         {
-            "Name": "demo.example.dev.",
+            "Name": "demo.example.com.",
             "Type": "NS",
             "TTL": 172800,
             "ResourceRecords": [
@@ -429,7 +429,7 @@ You can then proceed with the domain delegation from the authoritative zone.
 
 [Forecastle](https://github.com/stakater/Forecastle) is an open-source control panel where you can access all exposed applications running on Kubernetes.
 
-Navigate to https://directory.internal.demo.example.dev to see all the other ingresses deployed, grouped by namespace.
+Navigate to https://directory.internal.demo.example.com to see all the other ingresses deployed, grouped by namespace.
 
 ![Forecastle][forecastle-eks-screenshot]
 
@@ -437,7 +437,7 @@ Navigate to https://directory.internal.demo.example.dev to see all the other ing
 
 [Grafana](https://github.com/grafana/grafana) is an open-source platform for monitoring and observability. Grafana allows you to query, visualize, alert, and understand your metrics.
 
-Navigate to https://grafana.internal.demo.example.dev or click the Grafana icon from Forecastle.
+Navigate to https://grafana.internal.demo.example.com or click the Grafana icon from Forecastle.
 
 #### Discover the logs
 
@@ -512,7 +512,7 @@ Output should be:
 pod/bad-pod created
 ```
 
-> 💡 **TIP** Gatekeeper Policy Manger, a simple readonly web UI to easily see the deployed policies and their status is installed as part of the OPA module. You can access it at http://gpm.internal.demo.example.dev/
+> 💡 **TIP** Gatekeeper Policy Manger, a simple readonly web UI to easily see the deployed policies and their status is installed as part of the OPA module. You can access it at http://gpm.internal.demo.example.com/
 
 ## Step 5 - Teardown
 

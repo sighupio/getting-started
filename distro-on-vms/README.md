@@ -15,7 +15,7 @@ To follow this tutorial, you need:
 
 - **kubectl** - 1.36.x to interact with the cluster.
 - VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Debian 13, Alma Linux 9, Ubuntu 20, or Ubuntu 24
-- Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.example.tld`, etc.
+- Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.com`, `worker2.example.com`, `master1.example.com`, etc.
 - Fixed IP address for each VM.
 - Two VMs for the load balancer Nodes (at least 1vCPU 1GB RAM each)
 - An additional IP that will be used by keepalived to expose the two load balancers in HA, and a DNS record pointed to this IP for the control-plane address.
@@ -113,8 +113,8 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = sighup.example.tld
-DNS.2 = *.sighup.example.tld
+DNS.1 = sighup.example.com
+DNS.2 = *.sighup.example.com
 ```
 
 Change the values according to your environment
@@ -154,8 +154,8 @@ This first piece of configuration defines where to find the PKI files (created i
 ---
 spec:
   kubernetes:
-    dnsZone: example.tld
-    controlPlaneAddress: control-plane.example.tld:6443
+    dnsZone: example.com
+    controlPlaneAddress: control-plane.example.com:6443
     podCidr: 172.16.128.0/17
     svcCidr: 172.16.0.0/17
 ```
@@ -220,7 +220,7 @@ spec:
 
 Next we define the control-plane nodes and the worker nodes. The FQDN that will be used for each node will be the concatenation of the name and the `.spec.kubernetes.dnsZone` field.
 
-For example, `master1` will become `master1.example.tld`.
+For example, `master1` will become `master1.example.com`.
 
 #### Custom registry for Kubernetes core components images
 
@@ -254,7 +254,7 @@ spec:
   distribution:
     modules:
       ingress:
-        baseDomain: sighup.example.tld
+        baseDomain: sighup.example.com
         nginx:
           type: none
         haproxy:
@@ -287,7 +287,7 @@ To correctly configure the cert-manager clusterIssuer, we need to put a valid co
 >  distribution:
 >    modules:
 >      ingress:
->        baseDomain: sighup.example.tld
+>        baseDomain: sighup.example.com
 >        nginx:
 >          type: none
 >        haproxy:
@@ -387,7 +387,7 @@ spec:
           clusterRole: view
 ```
 
-This section installs [Headlamp][headlamp] from the `module-utilities` core module: a web UI for Kubernetes, extended with plugins for the SD modules (alerts, certificates, logs, backups, and policies). Headlamp is exposed at `dashboard.<baseDomain>`, in this example `dashboard.sighup.example.tld`.
+This section installs [Headlamp][headlamp] from the `module-utilities` core module: a web UI for Kubernetes, extended with plugins for the SD modules (alerts, certificates, logs, backups, and policies). Headlamp is exposed at `dashboard.<baseDomain>`, in this example `dashboard.sighup.example.com`.
 
 With `type: token-auth`, users log in with a Kubernetes token and get the permissions of that token. The optional `clusterRole` field binds the `view` ClusterRole to the `headlamp` ServiceAccount, so that you can use its token to log in with read-only access to the cluster.
 
@@ -508,7 +508,7 @@ furyctl get cluster-info
 
 [Forecastle](https://github.com/stakater/Forecastle) is an open-source control panel where you can access all exposed applications running on Kubernetes.
 
-Navigate to https://directory.sighup.example.tld to see all the other ingresses deployed, grouped by namespace.
+Navigate to https://directory.sighup.example.com to see all the other ingresses deployed, grouped by namespace.
 
 ![Forecastle][forecastle-screenshot]
 
@@ -516,7 +516,7 @@ Navigate to https://directory.sighup.example.tld to see all the other ingresses 
 
 [Grafana](https://github.com/grafana/grafana) is an open-source platform for monitoring and observability. Grafana allows you to query, visualize, alert, and understand your metrics.
 
-Navigate to https://grafana.sighup.example.tld or click the Grafana icon from Forecastle.
+Navigate to https://grafana.sighup.example.com or click the Grafana icon from Forecastle.
 
 #### Discover the logs
 
@@ -552,7 +552,7 @@ This is what you should see:
     kubectl -n headlamp create token headlamp --duration 8h
     ```
 
-2. Navigate to https://dashboard.sighup.example.tld or click the Headlamp icon from Forecastle.
+2. Navigate to https://dashboard.sighup.example.com or click the Headlamp icon from Forecastle.
 3. Paste the token and log in.
 
 ![Headlamp][headlamp-screenshot]

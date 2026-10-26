@@ -98,7 +98,7 @@ spec:
           value: infra
     modules:
       ingress:
-        baseDomain: internal.demo.example.dev
+        baseDomain: internal.demo.example.com
         nginx:
           type: none
         haproxy:
@@ -108,14 +108,14 @@ spec:
         certManager:
           clusterIssuer:
             name: letsencrypt-sighup
-            email: admin@example.dev
+            email: admin@example.com
             type: dns01
         dns:
           public:
-            name: demo.example.dev
+            name: demo.example.com
             create: true
           private:
-            name: internal.demo.example.dev
+            name: internal.demo.example.com
             create: true
       logging:
         type: loki

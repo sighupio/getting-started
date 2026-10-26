@@ -15,8 +15,8 @@ spec:
     ssh:
       username: root
       keyPath: ./ssh-key
-    dnsZone: example.tld
-    controlPlaneAddress: control-plane.example.tld:6443
+    dnsZone: example.com
+    controlPlaneAddress: control-plane.example.com:6443
     podCidr: 172.16.128.0/17
     svcCidr: 172.16.0.0/17
     loadBalancers:
@@ -62,7 +62,7 @@ spec:
         type: calico
       # This section contains all the configurations for the ingress module
       ingress:
-        baseDomain: sighup.example.tld
+        baseDomain: sighup.example.com
         nginx:
           type: none
         haproxy:
