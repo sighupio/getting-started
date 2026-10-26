@@ -31,8 +31,9 @@ to set up. `furyctl` does this work for you:
 
 Flatcar has a read-only `/usr` partition and an A/B update scheme. You do not patch packages on a node.
 Each node gets its full configuration from Ignition at first boot. Automatic OS updates are off, because
-the installer masks `update-engine` and sets `REBOOT_STRATEGY=off`. `furyctl` drives the A/B update during
-a cluster upgrade.
+the installer sets `SERVER=disabled` in `/etc/flatcar/update.conf` and `REBOOT_STRATEGY=off`. `furyctl`
+drives the A/B update during a cluster upgrade: it installs on each node the exact Flatcar version that the
+SD release pins.
 
 For the full description of the flow, read the [Immutable Installation Guide][immutable-install].
 
@@ -42,8 +43,8 @@ This tutorial assumes some basic familiarity with Kubernetes.
 
 ### Tooling
 
-- **furyctl** — 0.35.1 or later. It downloads and manages the other tools that the installation needs.
-- **kubectl** — 1.35.x, to interact with the cluster.
+- **furyctl** — 0.36.0 or later. It downloads and manages the other tools that the installation needs.
+- **kubectl** — 1.36.x, to interact with the cluster.
 - **openssl** — to create the TLS certificate for the ingresses.
 - A machine that runs `furyctl`, often a bastion host. Every cluster machine must reach TCP port `8080`
   on this machine.
@@ -210,8 +211,8 @@ and gets the URL of the boot server. The `ipxe` tag stops a boot loop.
 Install the `furyctl` binary with the instructions in [furyctl's documentation][furyctl-installation].
 
 Always install the latest version. The latest versions work with previous versions of the distribution,
-and they can include more bug fixes. This tutorial needs furyctl 0.35.1 or later: it is the first release
-that accepts SD v1.35.1 for the `Immutable` kind. Run this command to see the version:
+and they can include more bug fixes. This tutorial needs furyctl 0.36.0 or later, to install SD v1.36.0
+with the `Immutable` kind. Run this command to see the version:
 
 ```bash
 furyctl version
@@ -312,7 +313,7 @@ complete example file. Use it as your starting point.
 > To create a new file from scratch instead, run:
 >
 > ```bash
-> furyctl create config --kind Immutable --version v1.35.1 --name getting-started
+> furyctl create config --kind Immutable --version v1.36.0 --name getting-started
 > ```
 
 This step explains the main fields of the file.
@@ -664,6 +665,31 @@ spec:
 This section configures the authentication of the ingresses, and the OIDC authentication to the
 Kubernetes API server. To keep this tutorial short, both are disabled.
 
+#### Utilities core module
+
+```yaml
+spec:
+  distribution:
+    modules:
+      utilities:
+        headlamp:
+          type: token-auth
+          clusterRole: view
+```
+
+This section installs [Headlamp][headlamp] from the `module-utilities` core module. Headlamp is a web UI
+for Kubernetes, with plugins for the SD modules: alerts, certificates, logs, backups, and policies.
+Headlamp is exposed at `dashboard.<baseDomain>`, in this example `dashboard.sighup.example.com`.
+
+With `type: token-auth`, the users log in with a Kubernetes token and get the permissions of that token.
+The optional `clusterRole` field binds the `view` ClusterRole to the `headlamp` ServiceAccount. Then you
+can log in with the token of this ServiceAccount, with read-only access to the cluster.
+
+> [!NOTE]
+> With `type: sso`, Headlamp is behind Pomerium and the users log in with SSO. The group in `oidcGroup`
+> gets access to the cluster. This type requires `auth.provider.type: sso`. To disable Headlamp, set
+> `type: none`.
+
 #### Custom registry for the distribution phase
 
 You can also change the registry that supplies the images of the SD core modules. The host is mandatory.
@@ -683,18 +709,17 @@ For a mirror of the official SIGHUP Distribution registry, add `/fury` at the en
 > If the plugins pull from the official SIGHUP Distribution registry, this value replaces the registry of
 > the plugins too.
 
-### `.spec.plugins`
+### `.spec.distribution.customResources`
 
 ```yaml
 spec:
-  plugins:
-    kustomize:
-      - name: local-storage
-        folder: ./local-storage
+  distribution:
+    customResources:
+      - ./local-storage/
 ```
 
-This section installs additional plugins in the cluster. A plugin is a `helm` chart or a `kustomize`
-project. This tutorial installs one Kustomize project.
+This section adds custom resources to the distribution phase: `furyctl` applies them together with the
+SD core modules.
 
 The `local-storage` folder installs the `local-path-provisioner` and makes it the default storage class.
 It gives the cluster a simple dynamic storage.
@@ -709,16 +734,12 @@ The configuration is complete. Now `furyctl` can create the cluster.
 1. Start the installation:
 
     ```bash
-    furyctl apply --outdir $PWD --post-apply-phases distribution
+    furyctl apply --outdir $PWD
     ```
 
     > [!NOTE]
     > The `--outdir` flag selects the directory of the hidden `.furyctl` folder. This folder holds all the
     > files of the installation. Without the flag, `furyctl` uses the home directory of the user.
-    >
-    > The `--post-apply-phases distribution` flag repeats the distribution phase at the end of the run.
-    > The first run of the phase finds no storage class, because the plugins phase installs it later.
-    > The second run installs the components that need storage.
 
 2. Wait for this message:
 
@@ -733,15 +754,15 @@ The configuration is complete. Now `furyctl` can create the cluster.
 
     ```text
     Nodes bootstrap status — 3/8 booted
-      NODE                 STATUS   UPDATED
-      cp1.example.com      booted   12:05:02
-      cp2.example.com      pending  —
-      cp3.example.com      pending  —
-      lb1.example.com      booted   12:04:31
-      lb2.example.com      booted   12:04:38
-      worker1.example.com  pending  —
-      worker2.example.com  pending  —
-      worker3.example.com  pending  —
+      NODE                 STATUS   SOURCE IP      UPDATED
+      cp1.example.com      booted   192.168.1.181  12:05:02
+      cp2.example.com      pending  —              —
+      cp3.example.com      pending  —              —
+      lb1.example.com      booted   192.168.1.171  12:04:31
+      lb2.example.com      booted   192.168.1.172  12:04:38
+      worker1.example.com  pending  —              —
+      worker2.example.com  pending  —              —
+      worker3.example.com  pending  —              —
     ```
 
 5. After all the machines report `booted`, `furyctl` stops the server and continues alone.
@@ -767,11 +788,25 @@ INFO Tools ready (7 installed via mise)
 INFO Installing ansible collections...
 INFO Validating dependencies...
 INFO Running preflight checks...
+INFO Preflight state: 0 of 8 hosts answer, 0 joined a cluster
+WARN furyctl could not read these hosts: cp1.example.com, cp2.example.com, cp3.example.com, lb1.example.com, lb2.example.com, worker1.example.com, worker2.example.com, worker3.example.com. It continues as if the cluster does not exist. A first apply gives this message, because the infrastructure phase creates those hosts. If the cluster is there, stop furyctl and make sure that these hosts answer.
 INFO Preflight checks completed successfully
-INFO Running preupgrade phase...
-INFO Preupgrade phase completed successfully
 INFO Flatcar installation butane files generated successfully
 INFO Downloading Flatcar boot artifacts and sysext packages...
+INFO Downloading Flatcar 4757.2.1 artifacts for x86-64...
+INFO Flatcar artifacts for x86-64 downloaded successfully
+INFO Downloading containerd sysext package 2.3.7...
+INFO containerd sysext package downloaded successfully
+INFO Downloading kubernetes sysext package v1.36.5...
+INFO kubernetes sysext package downloaded successfully
+INFO Downloading etcd sysext package v3.6.15...
+INFO etcd sysext package downloaded successfully
+INFO Downloading keepalived sysext package v2.4.3...
+INFO keepalived sysext package downloaded successfully
+INFO Downloading kubeadm sysext package v1.36.5...
+INFO kubeadm sysext package downloaded successfully
+INFO Downloading flatcar-python sysext package 4757.2.1...
+INFO flatcar-python sysext package downloaded successfully
 INFO Assets download completed successfully
 WARN Assets server started. You can boot your machines now
 INFO Press ENTER to skip waiting and continue, or CTRL+C to cancel and exit.
@@ -785,16 +820,16 @@ INFO SIGHUP Distribution Kubernetes cluster configured successfully
 INFO Configuring SIGHUP Distribution modules...
 INFO Checking that the cluster is reachable...
 INFO Checking for a default storage class...
-WARN No storage classes found in the cluster. logging module (if enabled), tracing module (if enabled), dr module (if enabled) and prometheus-operated package installation will be skipped. Install a *default* StorageClass and re-run furyctl to install the missing components.
+WARN No StorageClass found in the cluster. furyctl skips these packages: dr, logging, prometheus-operated. furyctl checks again later in this apply and, if a default StorageClass exists by then, applies the distribution phase again to install them. If not, install a default StorageClass and run furyctl again.
+INFO Applying Distribution modules...
+INFO SIGHUP Distribution configured successfully
+INFO A default StorageClass is now available ("local-path"). Applying the distribution phase again to install the packages that were skipped: dr, logging, prometheus-operated
+INFO Configuring SIGHUP Distribution modules...
+INFO Checking that the cluster is reachable...
 INFO Applying Distribution modules...
 INFO SIGHUP Distribution configured successfully
 INFO Applying plugins...
-INFO Plugins installed successfully
-INFO Executing extra phases: distribution...
-INFO Configuring SIGHUP Distribution modules...
-INFO Checking for a default storage class...
-INFO Applying Distribution modules...
-INFO SIGHUP Distribution configured successfully
+INFO Skipping plugins phase as spec.plugins is not defined
 INFO Saving furyctl configuration file in the cluster...
 INFO Saving distribution configuration file in the cluster...
 ```
@@ -870,6 +905,22 @@ This is the result:
 
 ![Grafana][grafana-screenshot]
 
+### Headlamp
+
+[Headlamp][headlamp] is a web UI for Kubernetes. The SD plugins show the state of the cluster and of the
+SD modules in one place.
+
+1. Create a token for the `headlamp` ServiceAccount:
+
+    ```bash
+    kubectl -n headlamp create token headlamp --duration 8h
+    ```
+
+2. Open https://dashboard.sighup.example.com, or click the Headlamp icon in Forecastle.
+3. Paste the token and log in.
+
+![Headlamp][headlamp-screenshot]
+
 ## Conclusions
 
 Congratulations, you made it! 🥳🥳
@@ -907,6 +958,7 @@ More about SD:
 [docs]: https://docs.sighup.io
 [docs-prod-install]: https://docs.sighup.io/docs/installation
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
+[headlamp]: https://github.com/kubernetes-sigs/headlamp
 [immutable-install]: https://github.com/sighupio/installer-immutable/blob/main/docs/IMMUTABLE_INSTALL.md
 [immutable-case-dhcp]: https://github.com/sighupio/installer-immutable/blob/main/docs/install-case-dhcp-pxe.md
 [flatcar-site]: https://www.flatcar.org/
@@ -921,3 +973,4 @@ More about SD:
 [grafana-screenshot]: https://github.com/sighupio/getting-started/blob/media/grafana.png?raw=true
 [grafana-screenshot-logs]: https://github.com/sighupio/getting-started/blob/media/grafana-logs.png?raw=true
 [forecastle-screenshot]: https://github.com/sighupio/getting-started/blob/media/forecastle_immutable.png?raw=true
+[headlamp-screenshot]: https://github.com/sighupio/getting-started/blob/media/headlamp_immutable.png?raw=true

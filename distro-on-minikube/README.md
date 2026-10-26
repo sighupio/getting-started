@@ -20,7 +20,7 @@ This tutorial assumes some basic familiarity with Kubernetes.
 
 To follow this tutorial, you need:
 
-- **minikube** - follow the [installation guide](https://minikube.sigs.k8s.io/docs/start/). You can run the minikube cluster with one of the drivers listed.
+- **minikube** - version 1.39.0 or later, the first one that supports Kubernetes 1.36. Follow the [installation guide](https://minikube.sigs.k8s.io/docs/start/). You can run the minikube cluster with one of the drivers listed.
 - **kubectl** - to interact with the cluster.
 
 ### Setup and initialize the environment
@@ -41,10 +41,10 @@ cd getting-started/distro-on-minikube
     ```bash
     export REPO_DIR=$PWD
     export KUBECONFIG=$REPO_DIR/kubeconfig
-    minikube start --kubernetes-version v1.35.6 --memory=16g --cpus=6
+    minikube start --kubernetes-version v1.36.5 --memory=16g --cpus=6
     ```
 
-    > ⚠️ This command will spin up by default a single-node Kubernetes v1.35.6 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
+    > ⚠️ This command will spin up by default a single-node Kubernetes v1.36.5 cluster, using the default driver, with 6 CPUs, 16GB RAM and 20 GB Disk.
 
 2. Test the connection to the minikube cluster:
 
@@ -56,7 +56,7 @@ cd getting-started/distro-on-minikube
 
     ```bash
     NAME       STATUS   ROLES           AGE   VERSION
-    minikube   Ready    control-plane   9s    v1.35.6
+    minikube   Ready    control-plane   9s    v1.36.5
     ```
 
 ## Step 3 - Install furyctl
@@ -75,7 +75,7 @@ kind: KFDDistribution
 metadata:
   name: sighup-local
 spec:
-  distributionVersion: v1.35.1
+  distributionVersion: v1.36.0
   distribution:
     kubeconfig: "{env://KUBECONFIG}"
     modules:
@@ -175,8 +175,6 @@ INFO Validating dependencies...
 INFO Running preflight checks...                  
 INFO Checking that the cluster is reachable...    
 INFO Cannot find state in cluster, skipping...    
-INFO Running preupgrade phase...                  
-INFO Preupgrade phase completed successfully      
 INFO Installing SIGHUP Distribution...            
 INFO Checking that the cluster is reachable...    
 INFO Checking for a default storage class...      

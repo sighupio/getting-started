@@ -13,8 +13,8 @@ This tutorial assumes some basic familiarity with Kubernetes.
 
 To follow this tutorial, you need:
 
-- **kubectl** - 1.35.x to interact with the cluster.
-- VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Alma Linux 9, Ubuntu 20, or Ubuntu 24
+- **kubectl** - 1.36.x to interact with the cluster.
+- VMs OS: RHEL 8, RHEL 9, Rocky Linux 8, Rocky Linux 9, Debian 12, Debian 13, Alma Linux 9, Ubuntu 20, or Ubuntu 24
 - Valid FQDN for all the VMs, with a valid domain: for example, each VM should have a corresponding DNS entry like `worker1.example.tld`, `worker2.example.tld`, `master1.example.tld`, etc.
 - Fixed IP address for each VM.
 - Two VMs for the load balancer Nodes (at least 1vCPU 1GB RAM each)
@@ -42,7 +42,7 @@ To follow this tutorial, you need:
 
 Install `furyctl` binary following the instructions in [furyctl's documentation][furyctl-installation].
 
-We recommend always installing the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that the furyctl version is at least 0.35.1. You can check with the following command:
+We recommend always installing the latest version available. Latest versions are compatible with previous versions of the distribution and may include additional bug-fixes to the distribution. This guide assumes that the furyctl version is at least 0.36.0. You can check with the following command:
 
 ```bash
 furyctl version
@@ -375,6 +375,25 @@ spec:
 
 This section can be used to configure the authentication for the ingresses and the authentication via OIDC to the Kubernetes API Server, for simplicity we are disabling the authentication on the ingresses and not configuring the OIDC authentication for the API server.
 
+#### Utilities core module
+
+```yaml
+spec:
+  distribution:
+    modules:
+      utilities:
+        headlamp:
+          type: token-auth
+          clusterRole: view
+```
+
+This section installs [Headlamp][headlamp] from the `module-utilities` core module: a web UI for Kubernetes, extended with plugins for the SD modules (alerts, certificates, logs, backups, and policies). Headlamp is exposed at `dashboard.<baseDomain>`, in this example `dashboard.sighup.example.tld`.
+
+With `type: token-auth`, users log in with a Kubernetes token and get the permissions of that token. The optional `clusterRole` field binds the `view` ClusterRole to the `headlamp` ServiceAccount, so that you can use its token to log in with read-only access to the cluster.
+
+> [!NOTE]
+> You can also set `type: sso` to put Headlamp behind Pomerium: users log in with SSO and the group in `oidcGroup` gets access to the cluster. This type requires `auth.provider.type: sso`. Set `type: none` to disable Headlamp.
+
 #### Custom registry for distribution phase
 
 Just like we can override the registry for the Kubernetes components, we can also override the URL of the registry where to pull images from for the SD core modules. The host is mandatory, while the port is optional. For mirrors of the official SIGHUP Distribution registry, append `/fury` at the end (the default value is `registry.sighup.io/fury`).
@@ -389,6 +408,17 @@ spec:
 > [!WARNING]
 > If plugins are pulled from the official SIGHUP Distribution registry, the registry will be replaced for the plugins too.
 
+### `.spec.distribution.customResources`
+
+```yaml
+spec:
+  distribution:
+    customResources:
+      - ./local-storage/
+```
+
+This section adds custom resources to the distribution phase, furyctl applies them together with the SD core modules. In this example, the `local-storage` folder installs the `local-path-provisioner` and makes it the default storage class.
+
 ### `.spec.plugins`
 
 ```yaml
@@ -397,15 +427,11 @@ spec:
     kustomize:
       - name: cert-manager-secret
         folder: ./cert-manager-secret/
-      - name: storage
-        folder: https://github.com/rancher/local-path-provisioner/deploy?ref=v0.0.24
 ```
 
-This section configures additional plugins to be installed in the cluster. There can be two types of plugin, `helm` and `kustomize`, in this example we are installing two Kustomize projects.
+This section configures additional plugins to be installed in the cluster. There can be two types of plugin, `helm` and `kustomize`, in this example we are installing one Kustomize project.
 
-The first one, under the `cert-manager-secret` folder, installs the secret used by cert-manager to interact with the route53 zone for the dns01 challenge. Change the example values in the `./cert-manager-secret` folder with the correct credentials to interact with your route53 zone.
-
-The second one, storage, installs the `local-path-provisioner` that provides a simple dynamic storage for the cluster (not production grade).
+The `cert-manager-secret` folder installs the secret used by cert-manager to interact with the route53 zone for the dns01 challenge. Change the example values in the `./cert-manager-secret` folder with the correct credentials to interact with your route53 zone.
 
 ## Step 5 - Launch the installation with `furyctl`
 
@@ -438,16 +464,19 @@ INFO Installing ansible collections...
 INFO Validating dependencies...                   
 INFO Running preflight checks...                  
 INFO Preflight checks completed successfully      
-INFO Running preupgrade phase...                  
-INFO Preupgrade phase completed successfully      
 INFO Configuring SIGHUP Distribution cluster...   
 INFO Checking that the hosts are reachable...     
 INFO Applying cluster configuration...            
-INFO Kubernetes cluster created successfully      
+INFO Kubernetes cluster configured successfully   
 INFO Installing SIGHUP Distribution...            
 INFO Checking that the cluster is reachable...    
 INFO Checking for a default storage class...      
-WARN No storage classes found in the cluster. logging module (if enabled), tracing module (if enabled), dr module (if enabled) and prometheus-operated package installation will be skipped. Install a *default* StorageClass and re-run furyctl to install the missing components. 
+WARN No StorageClass found in the cluster. furyctl skips these packages: dr, logging, tracing, prometheus-operated. furyctl checks again later in this apply and, if a default StorageClass exists by then, applies the distribution phase again to install them. If not, install a default StorageClass and run furyctl again. 
+INFO Applying Distribution modules...             
+INFO SIGHUP Distribution installed successfully   
+INFO A default StorageClass is now available ("local-path"). Applying the distribution phase again to install the packages that were skipped: dr, logging, tracing, prometheus-operated 
+INFO Installing SIGHUP Distribution...            
+INFO Checking that the cluster is reachable...    
 INFO Applying Distribution modules...             
 INFO SIGHUP Distribution installed successfully   
 INFO Applying plugins...                          
@@ -456,47 +485,10 @@ INFO Saving furyctl configuration file in the cluster...
 INFO Saving distribution configuration file in the cluster... 
 ```
 
-🚀 Success! The first deployment step is complete. Note that furyctl is telling us that it skipped the installation of components that require storage because there was no storage class available. Run `furyctl` again to install all the components that need a working storageClass now, since we installed one using plugins function:
-
-```bash
-furyctl apply --outdir $PWD --skip-deps-download --phase distribution
-```
+🚀 Success! The cluster is ready.
 
 > [!TIP]
 > To speed up the following executions, you can use `--skip-deps-download`. This works only if the `.furyctl` folder has been already initialized.
-
-<!-- spacer -->
-
-> [!TIP]
-> To run the first apply of all the phases and automatically run the distribution phase again, you can add the `--post-apply-phases distribution` flag in the first apply command.
-
-
-```bash
-INFO Downloading distribution...                  
-INFO Validating configuration file...             
-INFO Downloading dependencies...                  
-INFO Tools ready (7 installed via mise)           
-INFO Installing ansible collections...            
-INFO Validating dependencies...                   
-INFO Running preflight checks...                  
-INFO Checking that the cluster is reachable...    
-INFO Preflight checks completed successfully      
-INFO Running preupgrade phase...                  
-INFO Preupgrade phase completed successfully      
-INFO Configuring SIGHUP Distribution cluster...   
-INFO Checking that the hosts are reachable...     
-INFO Applying cluster configuration...            
-INFO Kubernetes cluster created successfully      
-INFO Installing SIGHUP Distribution...            
-INFO Checking that the cluster is reachable...    
-INFO Checking for a default storage class...      
-INFO Applying Distribution modules...             
-INFO SIGHUP Distribution installed successfully   
-INFO Applying plugins...                          
-INFO Plugins installed successfully               
-INFO Saving furyctl configuration file in the cluster... 
-INFO Saving distribution configuration file in the cluster... 
-```
 
 To interact with the cluster a `kubeconfig` has been created on the folder, make it usable with `kubectl` with:
 
@@ -550,6 +542,21 @@ This is what you should see:
 
 ![Grafana][grafana-screenshot]
 
+### Headlamp
+
+[Headlamp][headlamp] is a web UI for Kubernetes. The SD plugins show the state of the cluster and of the SD modules in one place.
+
+1. Create a token for the `headlamp` ServiceAccount:
+
+    ```bash
+    kubectl -n headlamp create token headlamp --duration 8h
+    ```
+
+2. Navigate to https://dashboard.sighup.example.tld or click the Headlamp icon from Forecastle.
+3. Paste the token and log in.
+
+![Headlamp][headlamp-screenshot]
+
 ## Conclusions
 
 Congratulations, you made it! 🥳🥳
@@ -580,8 +587,10 @@ More about SD:
 [docs]: https://docs.sighup.io
 [docs-prod-install]: https://docs.sighup.io/docs/installation
 [furyctl-installation]: https://github.com/sighupio/furyctl#installation
+[headlamp]: https://github.com/kubernetes-sigs/headlamp
 
 <!-- Images -->
 [grafana-screenshot]: https://github.com/sighupio/getting-started/blob/media/grafana.png?raw=true
 [grafana-screenshot-logs]: https://github.com/sighupio/getting-started/blob/media/grafana-logs.png?raw=true
 [forecastle-screenshot]: https://github.com/sighupio/getting-started/blob/media/forecastle_minikube.png?raw=true
+[headlamp-screenshot]: https://github.com/sighupio/getting-started/blob/media/headlamp.png?raw=true
