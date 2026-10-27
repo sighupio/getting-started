@@ -1,6 +1,6 @@
 # SIGHUP Distribution on EKS
 
-This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.35.1`
+This step-by-step tutorial guides you to deploy the **SIGHUP Distribution** (SD) on an EKS cluster on AWS using the furyctl `>=0.36.0`
 
 This tutorial covers the following steps:
 
@@ -68,7 +68,7 @@ is located at `/tmp/getting-started/distro-on-eks/furyctl.yaml`.
 > ℹ️ You can also create a sample configuration file by running the following command:
 >
 > ```bash
-> furyctl create config --kind EKSCluster --version v1.35.1 --config custom-furyctl.yaml
+> furyctl create config --kind EKSCluster --version v1.36.0 --config custom-furyctl.yaml
 > ```
 >
 > and edit the `custom-furyctl.yaml` file to fit your needs, when you are done you can use the `--config` flag to specify the path to the configuration file in the
@@ -92,7 +92,7 @@ kind: EKSCluster
 metadata:
   name: <CLUSTER_NAME>
 spec:
-  distributionVersion: "v1.35.1"
+  distributionVersion: "v1.36.0"
   toolsConfiguration:
     opentofu:
       state:
@@ -218,7 +218,7 @@ The Distribution section of the `furyctl.yaml` file contains the following param
           value: infra
     modules:
       ingress:
-        baseDomain: internal.demo.example.dev
+        baseDomain: internal.demo.example.com
         nginx:
           type: none
         haproxy:
@@ -228,14 +228,14 @@ The Distribution section of the `furyctl.yaml` file contains the following param
         certManager:
           clusterIssuer:
             name: letsencrypt-sighup
-            email: admin@example.dev
+            email: admin@example.com
             type: dns01
         dns:
           public:
-            name: demo.example.dev
+            name: demo.example.com
             create: true
           private:
-            name: internal.demo.example.dev
+            name: internal.demo.example.com
             create: true
       logging:
         type: loki
@@ -274,7 +274,7 @@ In this example, we are installing the distribution with the following options:
 Replace the field `<S3_VELERO_BUCKET_NAME>` with the name of the S3 bucket that will be used to store the Velero backups. Notice that **`furyctl` will create this bucket for you**.
 You can configure the existing modules or add new ones (take a look to the [docs][distribution-eks-reference]) should you prefer.
 
-You should also change the `example.dev` domain with a real one that you own, to be able to leverage the auto-ssl capabilities using cert-manager.
+You should also change the `example.com` domain with a real one that you own, to be able to leverage the auto-ssl capabilities using cert-manager.
 
 From these parameters, `furyctl` will automatically configure and deploy the battle-tested SIGHUP Distribution.
 
@@ -307,19 +307,15 @@ In this section, you will utilize furyctl to automatically provision an EKS Clus
     INFO Validating dependencies...                   
     INFO Ensure prerequisites are in place...         
     INFO Running preflight checks...                  
-    INFO Updating kubeconfig...                       
-    INFO Checking that the cluster is reachable...    
-    INFO Cannot find state in cluster, skipping...    
-    INFO Running preupgrade phase...                  
-    INFO Preupgrade phase completed successfully      
-    INFO Creating cluster...                          
+    INFO Preflight checks completed successfully      
+    INFO Applying the configuration...
     INFO Creating infrastructure...                   
     WARN Creating cloud resources, this could take a while...
-    INFO Infrastructure created successfully          
+    INFO Infrastructure configured successfully
     INFO Generating VPN client certificate...         
     INFO Configuring SIGHUP Distribution cluster...   
     WARN Creating cloud resources, this could take a while...
-    INFO Kubernetes cluster created successfully      
+    INFO Kubernetes cluster configured successfully
     INFO Installing SIGHUP Distribution...            
     WARN Creating cloud resources, this could take a while...
     INFO Checking that the cluster is reachable...    
@@ -329,7 +325,7 @@ In this section, you will utilize furyctl to automatically provision an EKS Clus
     INFO Skipping plugins phase as spec.plugins is not defined
     INFO Saving furyctl configuration file in the cluster...
     INFO Saving distribution configuration file in the cluster...
-    INFO SIGHUP Distribution cluster created successfully
+    INFO SIGHUP Distribution cluster configured successfully
     INFO Please remember to kill the VPN connection when you finish doing operations on the cluster 
     INFO To connect to the cluster, set the path to your kubeconfig with 'export KUBECONFIG=/private/tmp/getting-started/distro-on-eks/kubeconfig' or use the '--kubeconfig /private/tmp/getting-started/distro-on-eks/kubeconfig' flag in following executions
     ```
@@ -354,11 +350,11 @@ furyctl get cluster-info
 
 In the previous section, alongside the distribution, you have deployed Kubernetes ingresses to expose underlying services at the following HTTP routes:
 
-- `directory.internal.demo.example.dev`
-- `gpm.internal.demo.example.dev`
-- `grafana.internal.demo.example.dev`
-- `prometheus.internal.demo.example.dev`
-- `alertmanager.internal.demo.example.dev`
+- `directory.internal.demo.example.com`
+- `gpm.internal.demo.example.com`
+- `grafana.internal.demo.example.com`
+- `prometheus.internal.demo.example.com`
+- `alertmanager.internal.demo.example.com`
 
 These ingresses are only reachable from the private network, since in this example we configured HAProxy to use a dual setup, one exposed to the internet and one private.
 
@@ -375,7 +371,7 @@ aws route53 list-hosted-zones | cat
     "HostedZones": [
         {
             "Id": "/hostedzone/Z0993238TFEEUFQUA7T8",
-            "Name": "demo.example.dev.",
+            "Name": "demo.example.com.",
             "CallerReference": "terraform-20230904104525356400000001",
             "Config": {
                 "Comment": "Managed by Terraform",
@@ -385,7 +381,7 @@ aws route53 list-hosted-zones | cat
         },
         {
             "Id": "/hostedzone/Z00537863VMG5BHXEMRYA",
-            "Name": "internal.demo.example.dev.",
+            "Name": "internal.demo.example.com.",
             "CallerReference": "terraform-20230904104525356600000002",
             "Config": {
                 "Comment": "Managed by Terraform",
@@ -404,7 +400,7 @@ aws route53 list-resource-record-sets --hosted-zone-id Z0993238TFEEUFQUA7T8 | ca
 {
     "ResourceRecordSets": [
         {
-            "Name": "demo.example.dev.",
+            "Name": "demo.example.com.",
             "Type": "NS",
             "TTL": 172800,
             "ResourceRecords": [
@@ -433,7 +429,7 @@ You can then proceed with the domain delegation from the authoritative zone.
 
 [Forecastle](https://github.com/stakater/Forecastle) is an open-source control panel where you can access all exposed applications running on Kubernetes.
 
-Navigate to https://directory.internal.demo.example.dev to see all the other ingresses deployed, grouped by namespace.
+Navigate to https://directory.internal.demo.example.com to see all the other ingresses deployed, grouped by namespace.
 
 ![Forecastle][forecastle-eks-screenshot]
 
@@ -441,7 +437,7 @@ Navigate to https://directory.internal.demo.example.dev to see all the other ing
 
 [Grafana](https://github.com/grafana/grafana) is an open-source platform for monitoring and observability. Grafana allows you to query, visualize, alert, and understand your metrics.
 
-Navigate to https://grafana.internal.demo.example.dev or click the Grafana icon from Forecastle.
+Navigate to https://grafana.internal.demo.example.com or click the Grafana icon from Forecastle.
 
 #### Discover the logs
 
@@ -516,7 +512,7 @@ Output should be:
 pod/bad-pod created
 ```
 
-> 💡 **TIP** Gatekeeper Policy Manger, a simple readonly web UI to easily see the deployed policies and their status is installed as part of the OPA module. You can access it at http://gpm.internal.demo.example.dev/
+> 💡 **TIP** Gatekeeper Policy Manger, a simple readonly web UI to easily see the deployed policies and their status is installed as part of the OPA module. You can access it at http://gpm.internal.demo.example.com/
 
 ## Step 5 - Teardown
 

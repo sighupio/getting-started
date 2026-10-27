@@ -1,7 +1,7 @@
 # Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
-# yaml-language-server: $schema=https://raw.githubusercontent.com/sighupio/distribution/v1.35.1/schemas/public/immutable-kfd-v1alpha2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/sighupio/distribution/v1.36.0/schemas/public/immutable-kfd-v1alpha2.json
 
 ---
 apiVersion: kfd.sighup.io/v1alpha2
@@ -9,7 +9,7 @@ kind: Immutable
 metadata:
   name: getting-started
 spec:
-  distributionVersion: v1.35.1
+  distributionVersion: v1.36.0
 
   infrastructure:
     # The public key is written into every machine. furyctl uses the private key to connect
@@ -140,6 +140,8 @@ spec:
           - hostname: worker3.example.com
 
   distribution:
+    customResources:
+      - ./local-storage/
     modules:
       networking:
         type: cilium
@@ -187,7 +189,7 @@ spec:
         provider:
           type: none
 
-  plugins:
-    kustomize:
-      - name: local-storage
-        folder: ./local-storage
+      utilities:
+        headlamp:
+          type: token-auth
+          clusterRole: view

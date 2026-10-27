@@ -1,7 +1,7 @@
 # Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
-# yaml-language-server: $schema=https://raw.githubusercontent.com/sighupio/distribution/v1.35.1/schemas/public/onpremises-kfd-v1alpha2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/sighupio/distribution/v1.36.0/schemas/public/onpremises-kfd-v1alpha2.json
 
 ---
 apiVersion: kfd.sighup.io/v1alpha2
@@ -9,14 +9,14 @@ kind: OnPremises
 metadata:
   name: getting-started
 spec:
-  distributionVersion: v1.35.1
+  distributionVersion: v1.36.0
   kubernetes:
     pkiFolder: ./pki
     ssh:
       username: root
       keyPath: ./ssh-key
-    dnsZone: example.tld
-    controlPlaneAddress: control-plane.example.tld:6443
+    dnsZone: example.com
+    controlPlaneAddress: control-plane.example.com:6443
     podCidr: 172.16.128.0/17
     svcCidr: 172.16.0.0/17
     loadBalancers:
@@ -55,12 +55,14 @@ spec:
             ip: 192.168.1.186
   distribution:
     common: {}
+    customResources:
+      - ./local-storage/
     modules:
       networking:
         type: calico
       # This section contains all the configurations for the ingress module
       ingress:
-        baseDomain: sighup.example.tld
+        baseDomain: sighup.example.com
         nginx:
           type: none
         haproxy:
@@ -95,10 +97,12 @@ spec:
       auth:
         provider:
           type: none
+      utilities:
+        headlamp:
+          type: token-auth
+          clusterRole: view
 
   plugins:
     kustomize:
       - name: cert-manager-secret
         folder: ./cert-manager-secret/
-      - name: storage
-        folder: ./local-storage/
