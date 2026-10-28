@@ -5,7 +5,7 @@ The `Immutable` kind installs [Flatcar Container Linux][flatcar-site] on the mac
 and then installs Kubernetes and SD on them. The machines can be bare-metal machines or virtual machines.
 
 > [!WARNING]
-> The Immutable Installer is in **alpha** status and is under active development. Its configuration and
+> The Immutable Installer is in **beta**. Its configuration and
 > behavior can change between releases.
 
 <!-- spacer -->
