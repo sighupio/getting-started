@@ -43,7 +43,7 @@ This tutorial assumes some basic familiarity with Kubernetes.
 
 ### Tooling
 
-- **furyctl** — 0.36.0 or later. It downloads and manages the other tools that the installation needs.
+- **furyctl** — 0.36.2 or later. It downloads and manages the other tools that the installation needs.
 - **kubectl** — 1.36.x, to interact with the cluster.
 - **openssl** — to create the TLS certificate for the ingresses.
 - A machine that runs `furyctl`, often a bastion host. Every cluster machine must reach TCP port `8080`
@@ -211,7 +211,7 @@ and gets the URL of the boot server. The `ipxe` tag stops a boot loop.
 Install the `furyctl` binary with the instructions in [furyctl's documentation][furyctl-installation].
 
 Always install the latest version. The latest versions work with previous versions of the distribution,
-and they can include more bug fixes. This tutorial needs furyctl 0.36.0 or later, to install SD v1.36.0
+and they can include more bug fixes. This tutorial needs furyctl 0.36.2 or later, to install SD v1.36.1
 with the `Immutable` kind. Run this command to see the version:
 
 ```bash
@@ -313,7 +313,7 @@ complete example file. Use it as your starting point.
 > To create a new file from scratch instead, run:
 >
 > ```bash
-> furyctl create config --kind Immutable --version v1.36.0 --name getting-started
+> furyctl create config --kind Immutable --version v1.36.1 --name getting-started
 > ```
 
 This step explains the main fields of the file.
@@ -793,19 +793,19 @@ WARN furyctl could not read these hosts: cp1.example.com, cp2.example.com, cp3.e
 INFO Preflight checks completed successfully
 INFO Flatcar installation butane files generated successfully
 INFO Downloading Flatcar boot artifacts and sysext packages...
-INFO Downloading Flatcar 4757.2.1 artifacts for x86-64...
+INFO Downloading Flatcar 4757.2.3 artifacts for x86-64...
 INFO Flatcar artifacts for x86-64 downloaded successfully
 INFO Downloading containerd sysext package 2.3.7...
 INFO containerd sysext package downloaded successfully
 INFO Downloading kubernetes sysext package v1.36.5...
 INFO kubernetes sysext package downloaded successfully
-INFO Downloading etcd sysext package v3.6.15...
+INFO Downloading etcd sysext package v3.6.16...
 INFO etcd sysext package downloaded successfully
 INFO Downloading keepalived sysext package v2.4.3...
 INFO keepalived sysext package downloaded successfully
 INFO Downloading kubeadm sysext package v1.36.5...
 INFO kubeadm sysext package downloaded successfully
-INFO Downloading flatcar-python sysext package 4757.2.1...
+INFO Downloading flatcar-python sysext package 4757.2.3...
 INFO flatcar-python sysext package downloaded successfully
 INFO Assets download completed successfully
 WARN Assets server started. You can boot your machines now

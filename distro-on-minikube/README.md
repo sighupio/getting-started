@@ -75,7 +75,7 @@ kind: KFDDistribution
 metadata:
   name: sighup-local
 spec:
-  distributionVersion: v1.36.0
+  distributionVersion: v1.36.1
   distribution:
     kubeconfig: "{env://KUBECONFIG}"
     modules:
