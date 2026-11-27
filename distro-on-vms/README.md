@@ -1,4 +1,4 @@
-# SIGHUP Distribution on VMs
+# SIGHUP Distribution on machines with your OS
 
 This step-by-step tutorial helps you deploy a full SIGHUP Distribution (SD) cluster on a set of already existing VMs.
 

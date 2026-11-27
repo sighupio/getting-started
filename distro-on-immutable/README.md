@@ -1,4 +1,4 @@
-# SIGHUP Distribution on Immutable machines
+# SIGHUP Distribution on machines with the SD OS
 
 This tutorial shows how to deploy a full SIGHUP Distribution (SD) cluster with the `Immutable` kind.
 The `Immutable` kind installs [Flatcar Container Linux][flatcar-site] on the machines over the network,
@@ -11,7 +11,7 @@ and then installs Kubernetes and SD on them. The machines can be bare-metal mach
 <!-- spacer -->
 
 > [!TIP]
-> 💻 If your machines already have an operating system, use the [SIGHUP Distribution on VMs][distro-on-vms]
+> 💻 If your machines already have an operating system, use the [SIGHUP Distribution on machines with your OS][distro-on-vms]
 > tutorial instead. ☁️ To try SD in a cloud environment, use the [SIGHUP Distribution on EKS][distro-on-eks]
 > tutorial.
 
@@ -301,7 +301,7 @@ Change the two `DNS` values to your own domain.
 
 > [!TIP]
 > If your load balancers are reachable from the internet, you can use cert-manager instead. SD includes
-> cert-manager and integrates it with the distribution. The [SIGHUP Distribution on VMs][distro-on-vms]
+> cert-manager and integrates it with the distribution. The [SIGHUP Distribution on machines with your OS][distro-on-vms]
 > tutorial shows the `dns01` challenge with Route 53.
 
 ## Step 5 - Write the `furyctl.yaml` configuration file
@@ -938,7 +938,7 @@ has issue templates, and its maintainers triage the components that this tutoria
 
 More tutorials:
 
-- [SIGHUP Distribution on VMs][distro-on-vms]
+- [SIGHUP Distribution on machines with your OS][distro-on-vms]
 - [SIGHUP Distribution on EKS][distro-on-eks]
 - [SIGHUP Distribution on Minikube][distro-on-minikube]
 

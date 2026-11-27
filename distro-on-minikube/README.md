@@ -303,7 +303,7 @@ If the installation itself failed, please [open an issue in the SIGHUP Distribut
 More tutorials:
 
 - [SIGHUP Distribution on EKS][distro-on-eks]
-- [SIGHUP Distribution on VMs][distro-on-vms]
+- [SIGHUP Distribution on machines with your OS][distro-on-vms]
 
 More about SIGHUP Distribution:
 
